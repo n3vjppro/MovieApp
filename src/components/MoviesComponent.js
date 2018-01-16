@@ -5,6 +5,8 @@ export default class MoviesComponent extends Component {
     static navigationOptions = ({ navigation }) => {
         const { params = {} } = navigation.state;
         let tabBarLabel = 'Movies';
+        let drawerLabel= 'Notifications';
+        
         let tabBarIcon = () => (
             <Image
                 source={require('../icons/home.png')}
@@ -20,7 +22,7 @@ export default class MoviesComponent extends Component {
             flex:1,
             flexDirection:'column',
         }}>
-            <HeaderComponent {...this.props}/>
+            
             <View style={{ flex: 1, backgroundColor: 'white', alignItems: 'center', justifyContent: 'center' }}>
                <Text>Movies</Text> 
             </View>

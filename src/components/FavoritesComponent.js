@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { Text, View, Image } from 'react-native';
+import HeaderComponent from './HeaderComponent'
+
 
 export default class FavoritesComponent extends Component {
     static navigationOptions = ({ navigation }) => {
@@ -16,8 +18,14 @@ export default class FavoritesComponent extends Component {
     }
     render() {
         return (
+            <View style={{
+                flex:1,
+                flexDirection:'column',
+            }}>
+            {/* <HeaderComponent {...this.props}/> */}
             <View style={{ flex: 1, backgroundColor: 'white', alignItems: 'center', justifyContent: 'center' }}>
                 <Text>Favorites</Text>
+            </View>
             </View>
         );
     }

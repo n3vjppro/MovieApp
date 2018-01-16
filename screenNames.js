@@ -1,4 +1,4 @@
 const Movies = "Movies";
 const Favorites = "Favorites";
-const Profile = "Profile";
+const Profile = "Profile SSS";
 export {Movies, Favorites, Profile};

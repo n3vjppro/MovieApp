@@ -1,12 +1,16 @@
-import { AppRegistry, Dimensions } from 'react-native';
-import {TabNavigator, DrawerNavigator} from 'react-navigation'
+import { AppRegistry, Dimensions, View, Image } from 'react-native';
+import React, { Component } from 'react';
+
+import {TabNavigator, DrawerNavigator, StackNavigator} from 'react-navigation'
 //import App from './App';
 import MoviesComponent from './src/components/MoviesComponent'
 import FavoritesComponent from './src/components/FavoritesComponent'
-
+import MyInfo from './src/components/My Profile/MyInfo'
 import {Movies, Favorites, Profile} from './screenNames'
 import HeaderComponent from './src/components/HeaderComponent';
+import EditProfile from './src/components/My Profile/EditProfile'
 
+var{height, width} = Dimensions.get('window');
 let routeConfigs ={
 Movies:{
     screen: MoviesComponent,
@@ -17,6 +21,7 @@ Favorites:{
 };
 
 let tabNavigatorConfig={
+    
     tabBarPosition: 'bottom',
     animationEnabled:true,
     swipeEnabled: true,
@@ -29,18 +34,39 @@ let tabNavigatorConfig={
         inactiveTintColor:'white',
 },
 }
-const App = TabNavigator(routeConfigs, tabNavigatorConfig);
+const MainScreenTabNavigator = TabNavigator(routeConfigs, tabNavigatorConfig);
+
+export class MainScreenTab extends Component{
+    static navigationOptions={
+     drawerLabel : <MyInfo />
+};
+    render(){
+        return(
+        <View style={{
+            flex:1,
+            flexDirection:'column'}}>
+        <HeaderComponent {...this.props}/>
+        <MainScreenTabNavigator/>
+        </View>
+        );
+    }
+}
 
 let drouteConfigs ={
-    Home:{
-        screen: HeaderComponent,
+    MyInfo:{
+        screen: MainScreenTab,
+       
     },
-    
+    EditProfile:{
+        screen: EditProfile,
+    }
+
+
     };
 
 let drawerNavigatorConfig={
-    //initialRouteName: tabNavigatorConfig,
-    drawerWidth: Dimensions.get('window')/2,
+    //initialRouteName: MoviesComponent,
+    drawerWidth: 2*width/3,
     drawerPosition:'left',
     drawerOpenRoute:'DrawerOpen',
     drawerCloseRoute:'DrawerClose',
@@ -48,6 +74,21 @@ let drawerNavigatorConfig={
 };
 
 
-const Draw = DrawerNavigator(drouteConfigs ,drawerNavigatorConfig);
+const Draw = DrawerNavigator(drouteConfigs,drawerNavigatorConfig );
+
+// const RootNavigator =
+// StackNavigator({
+//     Drawer: {
+//         name: 'Drawer',
+//         screen: DrawerNavigator(
+//             drouteConfigs,drawerNavigatorConfig
+//         ),
+//     },
+//     ...routeConfigs
+// },tabNavigatorConfig,
+//     {
+//         headerMode: 'none'
+//     }
+// );
 
 AppRegistry.registerComponent('MovieApp', () => Draw);
