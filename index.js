@@ -1,80 +1,80 @@
 import { AppRegistry, Dimensions, View, Image } from 'react-native';
 import React, { Component } from 'react';
 
-import {TabNavigator, DrawerNavigator, StackNavigator} from 'react-navigation'
+import { TabNavigator, DrawerNavigator, StackNavigator, DrawerItems } from 'react-navigation'
 //import App from './App';
 import MoviesComponent from './src/components/MoviesComponent'
 import FavoritesComponent from './src/components/FavoritesComponent'
 import MyInfo from './src/components/My Profile/MyInfo'
-import {Movies, Favorites, Profile} from './screenNames'
+import { Movies, Favorites, Profile } from './screenNames'
 import HeaderComponent from './src/components/HeaderComponent';
-import EditProfile from './src/components/My Profile/EditProfile'
+import EditProfile from './src/components/My Profile/EditProfile';
+import DrawerSlide from './src/components/DrawerSlide';
 
-var{height, width} = Dimensions.get('window');
-let routeConfigs ={
-Movies:{
-    screen: MoviesComponent,
-},
-Favorites:{
-    screen: FavoritesComponent,
-}
+var { height, width } = Dimensions.get('window');
+let routeConfigs = {
+    Movies: {
+        screen: MoviesComponent,
+    },
+    Favorites: {
+        screen: FavoritesComponent,
+    }
 };
 
-let tabNavigatorConfig={
-    
+let tabNavigatorConfig = {
+
     tabBarPosition: 'bottom',
-    animationEnabled:true,
+    animationEnabled: true,
     swipeEnabled: true,
-    tabBarOptions:{
-        style:{
+    tabBarOptions: {
+        style: {
             padding: -10
         },
         //showLabel: false,
-        activeTintColor:'black',
-        inactiveTintColor:'white',
-},
+        activeTintColor: 'black',
+        inactiveTintColor: 'white',
+    },
 }
 const MainScreenTabNavigator = TabNavigator(routeConfigs, tabNavigatorConfig);
 
-export class MainScreenTab extends Component{
-    static navigationOptions={
-     drawerLabel : <MyInfo />
-};
-    render(){
-        return(
-        <View style={{
-            flex:1,
-            flexDirection:'column'}}>
-        <HeaderComponent {...this.props}/>
-        <MainScreenTabNavigator/>
-        </View>
+export class MainScreenTab extends Component {
+    static navigationOptions = {
+        //drawerLabel: <MyInfo />
+    };
+    render() {
+        return (
+            <View style={{
+                flex: 1,
+                flexDirection: 'column'
+            }}>
+                <HeaderComponent {...this.props} />
+                <MainScreenTabNavigator />
+            </View>
         );
     }
 }
 
-let drouteConfigs ={
-    MyInfo:{
+let drawerRouteConfigs = {
+    MainScreenTab: {
         screen: MainScreenTab,
-       
     },
-    EditProfile:{
+    EditProfile: {
         screen: EditProfile,
     }
-
-
-    };
-
-let drawerNavigatorConfig={
-    //initialRouteName: MoviesComponent,
-    drawerWidth: 2*width/3,
-    drawerPosition:'left',
-    drawerOpenRoute:'DrawerOpen',
-    drawerCloseRoute:'DrawerClose',
-    drawerToggleRoute:'DrawerToggle',
 };
 
+let drawerNavigatorConfig = {
+    //initialRouteName: MoviesComponent,
+    drawerWidth: 2 * width / 3,
+    drawerPosition: 'left',
+    drawerOpenRoute: 'DrawerOpen',
+    drawerCloseRoute: 'DrawerClose',
+    drawerToggleRoute: 'DrawerToggle',
+    contentComponent: props => <DrawerSlide {...props} />,
+};
 
-const Draw = DrawerNavigator(drouteConfigs,drawerNavigatorConfig );
+const Draw = DrawerNavigator(drawerRouteConfigs,drawerNavigatorConfig 
+);
 
 // const RootNavigator =
 // StackNavigator({

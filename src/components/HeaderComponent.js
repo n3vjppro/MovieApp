@@ -4,26 +4,26 @@ import { Text, View, Image, TouchableOpacity } from 'react-native';
 export default class HeaderComponent extends Component {
     static navigationOptions = ({ navigation }) => {
         //const { params = {} } = navigation.state;
-        let drawerLabel = 'Home';
-        let drawerIcon = () => (
-            <Image
-                source={require('../icons/menu.png')}
-                style={{ width: 26, height: 26 }}
-            ></Image>
-        )
-        return { drawerIcon, drawerLabel };}
+        let drawerLabel = 'Menu';
+        // let drawerIcon = () => (
+        //     <Image
+        //         source={require('../icons/menu.png')}
+        //         style={{ width: 26, height: 26 }}
+        //     ></Image>
+        // )
+        return { drawerLabel };}
     render() {
         return (
             <View
                 style={{
-                    height:90,
+                    height:60,
                     flexDirection:'row',
                     justifyContent:'flex-start',
                     alignItems:'center'
                 }}
             >
             <TouchableOpacity
-                style={{marginLeft:10, marginTop:20}}
+                style={{marginLeft:10}}
                 onPress={()=>{
                     const {navigate} = this.props.navigation;
                     navigate('DrawerOpen')
