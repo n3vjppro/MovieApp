@@ -4,7 +4,7 @@ import {
     TouchableHighlight
 } from 'react-native';
 
-import { DrawerItems } from 'react-navigation';
+// import { DrawerItems } from 'react-navigation';
 import MyInfo from './My Profile/MyInfo'
 import EditProfile from './My Profile/EditProfile'
 export default class DrawerSlide extends Component {

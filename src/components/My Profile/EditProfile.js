@@ -1,29 +1,43 @@
 import React, { Component } from 'react';
-import { Text, View, Image, TouchableOpacity, Dimensions,StyleSheet, Button, ScrollView,CameraRoll } from 'react-native';
+import {
+    Text, View, Image, TouchableOpacity,
+    Dimensions, StyleSheet,
+    Button, ScrollView, CameraRoll,ListView,TouchableHighlight
+} from 'react-native';
 import HeaderComponent from '../HeaderComponent'
+import { StackNavigator } from 'react-navigation';
 import ViewPhotos from './ViewPhotos'
-export default class MoviesComponent extends Component {
-    constructor(props){
+
+
+
+export  class EditProfile extends React.Component {
+    static navigationOptions = {
+        title: 'Edit Profile',
+      }
+    constructor(props) {
         super(props);
         this.state = {
-            photoArray: [],
+            photos: [],
             showPhotos: false
-         }
-        
+        }
+
     }
+    
     _handleButtonPress = () => {
         CameraRoll.getPhotos({
             first: 20,
             assetType: 'All',
         })
             .then(r => {
-                this.setState({ photoArray: r.edges, showPhotos:true });
+                console.log(r.edges);
+                this.setState({ photos: r.edges});
+                console.log(this.state.photos);
+                console.log("ahihi")
             })
             .catch((err) => {
                 //Error Loading Images
             });
-            <ViewPhotos
-            photoArray={this.state.photoArray} />
+            // this.props.navigation.navigate('ViewPhotos')
     };
     render() {
         var { height, width } = Dimensions.get('window');
@@ -56,18 +70,19 @@ export default class MoviesComponent extends Component {
                     }}>
                         <TouchableOpacity
                             onPress={
-                                this._handleButtonPress
-                            }
+                                this._handleButtonPress       
+                                                 }
                         >
                             <Image
-                                source= {this.state.showPhotos?<SelectedPhoto />:require('../../icons/ava.jpg')}
+                                source={this.state.showPhotos ? "" : require('../../icons/ava.jpg')}
                                 style={{ width: width / 2, height: width / 2, borderRadius: 90, marginTop: 34 }}
                             ></Image>
                         </TouchableOpacity>
 
-        {/* <Button title="Load Images" onPress={this._handleButtonPress} /> */}
+                        {/* <Button title="Load Images" onPress={this._handleButtonPress} /> */}
                         <ScrollView>
-                            {this.state.photoArray.map((p, i) => {
+                            {this.state.photos.map((p, i) => {
+                                console.log(p.node.image.uri)
                                 return (
                                     <Image
                                         key={i}
@@ -79,7 +94,7 @@ export default class MoviesComponent extends Component {
                                     />
                                 );
                             })}
-                        </ScrollView>
+                        </ScrollView> 
                         <View style={{ backgroundColor: 'white', alignItems: 'center', justifyContent: 'center' }}>
                             <Text>Name</Text>
                         </View>
@@ -123,35 +138,39 @@ export default class MoviesComponent extends Component {
                             >Boy</Text>
                         </View>
                     </View>
-                    <TouchableOpacity
-                        onPress={() => this.props.navigation.navigate('EditProfile')}
-                        style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: 'blue', height: 35, width: 80, alignSelf: 'center', borderRadius: 10 }}>
-                        <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>Edit</Text>
-                    </TouchableOpacity>
+                    
                 </View></View>
         );
     }
 }
-
+export default  EditStack = StackNavigator({
+    EditProfile: {
+      screen: EditProfile,
+    },
+    ViewPhotos: {
+      screen: ViewPhotos,
+    },
+  });
+  
 export const SelectedPhoto = (props) => {
     const { uri } = props;
     return (
-      <View style={styles.container}>
-        <Image
-          source={{uri: uri}}
-          style={styles.image}/>
-      </View>
+        <View style={styles.container}>
+            <Image
+                source={{ uri: uri }}
+                style={styles.image} />
+        </View>
     );
-  };
-  
-  const styles = StyleSheet.create({
+};
+
+const styles = StyleSheet.create({
     container: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center'
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     image: {
-      height: 300,
-      width: 200
+        height: 300,
+        width: 200
     }
-  });
+});   

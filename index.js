@@ -66,15 +66,10 @@ let drawerRouteConfigs = {
 let drawerNavigatorConfig = {
     //initialRouteName: MoviesComponent,
     drawerWidth: 2 * width / 3,
-    drawerPosition: 'left',
-    drawerOpenRoute: 'DrawerOpen',
-    drawerCloseRoute: 'DrawerClose',
-    drawerToggleRoute: 'DrawerToggle',
     contentComponent: props => <DrawerSlide {...props} />,
 };
 
-const Draw = DrawerNavigator(drawerRouteConfigs,drawerNavigatorConfig 
-);
+const Draw = DrawerNavigator(drawerRouteConfigs,drawerNavigatorConfig);
 
 // const RootNavigator =
 // StackNavigator({

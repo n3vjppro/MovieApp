@@ -5,13 +5,16 @@ import {
   ListView,
   StyleSheet,
   Text,
-  TouchableHighlight
+  TouchableHighlight,CameraRoll
 
 } from 'react-native';
 
-import SelectedPhoto from './EditProfile'
+import SelectedPhoto from './EditProfile';
 
-class View extends Component {
+class ViewPhotos extends Component {
+  static navigationOptions = {
+    title: 'Pick a Picture',
+  }
   state = {
     ds: new ListView.DataSource({
       rowHasChanged: (r1, r2) => r1 !== r2
@@ -33,7 +36,19 @@ class View extends Component {
   }
 
   render() {
-      
+    CameraRoll.getPhotos({
+      first: 20,
+      assetType: 'All',
+  })
+      .then(r => {
+          console.log(r.edges);
+          this.setState({ photos: r.edges});
+          console.log(this.state.photos);
+          console.log("ahihi")
+      })
+      .catch((err) => {
+          //Error Loading Images
+      });
     const { showSelectedPhoto, uri } = this.state;
 
     if (showSelectedPhoto) {
