@@ -4,89 +4,99 @@ import {
   View,
   ListView,
   StyleSheet,
-  Text,
-  TouchableHighlight,CameraRoll
+  Text, PixelRatio,
+  TouchableHighlight, TouchableOpacity, CameraRoll
 
 } from 'react-native';
-
-import SelectedPhoto from './EditProfile';
+import ImagePicker from 'react-native-image-picker';
+//import SelectedPhoto from './EditProfile';
 
 class ViewPhotos extends Component {
-  static navigationOptions = {
-    title: 'Pick a Picture',
-  }
   state = {
-    ds: new ListView.DataSource({
-      rowHasChanged: (r1, r2) => r1 !== r2
-    }),
-    showSelectedPhoto: false,
-    uri: ''
-  }
 
-  renderRow(rowData) {
-    const { uri } = rowData.node.image;
-    return (
-      <TouchableHighlight
-        onPress={() => this.setState({ showSelectedPhoto: true, uri: uri })}>
-        <Image
-          source={{ uri: rowData.node.image.uri }}
-          style={styles.image} />
-      </TouchableHighlight>
-    )
-  }
+    avatarSource: null,
 
+  };
+
+
+
+  selectPhotoTapped() {
+    const options = {
+      quality: 1.0,
+      maxWidth: 500,
+      maxHeight: 500,
+      storageOptions: {
+        skipBackup: true
+      }
+    };
+    console.log(ImagePicker.showImagePicker);
+    //console.log('Response = ', response);
+    ImagePicker.launchImageLibrary(options, (response) => {
+
+      console.log('Response = ', response);
+
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      }
+      else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      }
+      else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+      }
+      else {
+        let source = { uri: response.uri };
+
+        // You can also display the image using data:
+        // let source = { uri: 'data:image/jpeg;base64,' + response.data };
+
+        this.setState({
+          avatarSource: source
+        });
+      }
+    });
+  }
   render() {
-    CameraRoll.getPhotos({
-      first: 20,
-      assetType: 'All',
-  })
-      .then(r => {
-          console.log(r.edges);
-          this.setState({ photos: r.edges});
-          console.log(this.state.photos);
-          console.log("ahihi")
-      })
-      .catch((err) => {
-          //Error Loading Images
-      });
-    const { showSelectedPhoto, uri } = this.state;
-
-    if (showSelectedPhoto) {
-      return (
-        <SelectedPhoto
-          uri={uri} />
-      )
-    }
     return (
-      <View style={{ flex: 1 }}>
-        <View style={{ alignItems: 'center', marginTop: 15 }}>
-          <Text style={{ fontSize: 20, fontWeight: '600' }}>Pick A Photo </Text>
-        </View>
-        <ListView
-          contentContainerStyle={styles.list}
-          dataSource={this.state.ds.cloneWithRows(this.props.photoArray)}
-          renderRow={(rowData) => this.renderRow(rowData)}
-          enableEmptySections={true} />
+      <View style={styles.container}>
+
+        <TouchableOpacity onPress={this.selectPhotoTapped.bind(this)}>
+
+          <View style={styles.ImageContainer}>
+
+            {this.state.ImageSource === null ? <Text>Select a Photo</Text> :
+              <Image style={styles.ImageContainer} source={this.state.avatarSource} />
+            }
+
+          </View>
+
+        </TouchableOpacity>
+
       </View>
     );
   }
 }
-
 const styles = StyleSheet.create({
-  list: {
-    flexDirection: 'row',
-    flexWrap: 'wrap'
+
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFF8E1'
   },
 
-  image: {
-    width: 110,
-    height: 120,
-    marginLeft: 10,
-    marginTop: 10,
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: '#979797'
-  }
-})
+  ImageContainer: {
+    borderRadius: 10,
+    width: 250,
+    height: 250,
+    borderColor: '#9B9B9B',
+    borderWidth: 1 / PixelRatio.get(),
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#CDDC39',
+
+  },
+
+});
 
 export default ViewPhotos;

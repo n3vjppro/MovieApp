@@ -2,51 +2,76 @@ import React, { Component } from 'react';
 import {
     Text, View, Image, TouchableOpacity,
     Dimensions, StyleSheet,
-    Button, ScrollView, CameraRoll,ListView,TouchableHighlight
+    Button, ScrollView, CameraRoll, ListView, TouchableHighlight,PixelRatio,
 } from 'react-native';
 import HeaderComponent from '../HeaderComponent'
 import { StackNavigator } from 'react-navigation';
-import ViewPhotos from './ViewPhotos'
+import ImagePicker from 'react-native-image-picker';
 
 
 
-export  class EditProfile extends React.Component {
+export default class EditProfile extends React.Component {
     static navigationOptions = {
         title: 'Edit Profile',
-      }
+    }
     constructor(props) {
         super(props);
         this.state = {
-            photos: [],
-            showPhotos: false
+            avatarSource: null,
         }
 
     }
-    
+    _donePress=()=>{
+
+        this.props.navigation.navigate('MainScreenTab',{
+            avatarSource: this.state.avatarSource,
+        } )
+    }
+
     _handleButtonPress = () => {
-        CameraRoll.getPhotos({
-            first: 20,
-            assetType: 'All',
-        })
-            .then(r => {
-                console.log(r.edges);
-                this.setState({ photos: r.edges});
-                console.log(this.state.photos);
-                console.log("ahihi")
-            })
-            .catch((err) => {
-                //Error Loading Images
-            });
-            // this.props.navigation.navigate('ViewPhotos')
+        const options = {
+            quality: 1.0,
+            maxWidth: 500,
+            maxHeight: 500,
+            storageOptions: {
+                skipBackup: true
+            }
+        };
+        console.log(ImagePicker.showImagePicker);
+        //console.log('Response = ', response);
+        ImagePicker.launchImageLibrary(options, (response) => {
+
+            console.log('Response = ', response);
+
+            if (response.didCancel) {
+                console.log('User cancelled image picker');
+            }
+            else if (response.error) {
+                console.log('ImagePicker Error: ', response.error);
+            }
+            else if (response.customButton) {
+                console.log('User tapped custom button: ', response.customButton);
+            }
+            else {
+                let source = { uri: response.uri };
+
+                // You can also display the image using data:
+                // let source = { uri: 'data:image/jpeg;base64,' + response.data };
+
+                this.setState({
+                    avatarSource: source
+                });
+            }
+        });
     };
     render() {
         var { height, width } = Dimensions.get('window');
         return (
             <View>
-                <HeaderComponent {...this.props} />
+                {/* <HeaderComponent {...this.props} /> */}
                 <View>
                     <View
-                        style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                        style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop:15 }}>
                         <Button
                             title="CANCEL"
                             style={{ backgroundColor: "green" }}
@@ -69,32 +94,23 @@ export  class EditProfile extends React.Component {
                         // justifyContent: 'center' 
                     }}>
                         <TouchableOpacity
-                            onPress={
-                                this._handleButtonPress       
-                                                 }
+
+                            onPress={this._handleButtonPress}
+
                         >
-                            <Image
-                                source={this.state.showPhotos ? "" : require('../../icons/ava.jpg')}
-                                style={{ width: width / 2, height: width / 2, borderRadius: 90, marginTop: 34 }}
-                            ></Image>
+                            {this.state.avatarSource === null ?
+                                <Image
+                                    source={require('../../icons/ava.jpg')}
+                                    style={{ width: width / 2, height: width / 2, borderRadius: 90, marginTop: 34 }}
+                                ></Image> :
+                                <Image style={{ width: width / 2, height: width / 2, borderRadius: 90, marginTop: 34 }}
+                                 source={this.state.avatarSource} />
+                            }
+
                         </TouchableOpacity>
 
                         {/* <Button title="Load Images" onPress={this._handleButtonPress} /> */}
-                        <ScrollView>
-                            {this.state.photos.map((p, i) => {
-                                console.log(p.node.image.uri)
-                                return (
-                                    <Image
-                                        key={i}
-                                        style={{
-                                            width: 300,
-                                            height: 100,
-                                        }}
-                                        source={{ uri: p.node.image.uri }}
-                                    />
-                                );
-                            })}
-                        </ScrollView> 
+                        
                         <View style={{ backgroundColor: 'white', alignItems: 'center', justifyContent: 'center' }}>
                             <Text>Name</Text>
                         </View>
@@ -138,20 +154,13 @@ export  class EditProfile extends React.Component {
                             >Boy</Text>
                         </View>
                     </View>
-                    
+
                 </View></View>
         );
     }
 }
-export default  EditStack = StackNavigator({
-    EditProfile: {
-      screen: EditProfile,
-    },
-    ViewPhotos: {
-      screen: ViewPhotos,
-    },
-  });
-  
+
+
 export const SelectedPhoto = (props) => {
     const { uri } = props;
     return (
@@ -172,5 +181,16 @@ const styles = StyleSheet.create({
     image: {
         height: 300,
         width: 200
-    }
+    },
+    ImageContainer: {
+        borderRadius: 10,
+        width: 250,
+        height: 250,
+        borderColor: '#9B9B9B',
+        borderWidth: 1 / PixelRatio.get(),
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#CDDC39',
+    
+      },
 });   

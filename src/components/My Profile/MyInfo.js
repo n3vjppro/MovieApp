@@ -5,6 +5,15 @@ import {
 } from 'react-native';
 
 export default class MoviesComponent extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            avatarSource: null,
+        }
+    }
+
+   
+
     render() {
         var { height, width } = Dimensions.get('window');
         return (
@@ -15,10 +24,14 @@ export default class MoviesComponent extends Component {
                     alignItems: 'center',
                     // justifyContent: 'center' 
                 }}>
-                    <Image
-                        source={require('../../icons/ava.jpg')}
-                        style={{ width: width / 2, height: width / 2, borderRadius: 90, marginTop: 34 }}
-                    ></Image>
+                    {this.state.avatarSource === null ?
+                                <Image
+                                    source={require('../../icons/ava.jpg')}
+                                    style={{ width: width / 2, height: width / 2, borderRadius: 90, marginTop: 34 }}
+                                ></Image> :
+                                <Image style={{ width: width / 2, height: width / 2, borderRadius: 90, marginTop: 34 }}
+                                 source={this.state.avatarSource} />
+                            }
 
                     <View style={{ backgroundColor: 'white', alignItems: 'center', justifyContent: 'center' }}>
                         <Text>Name</Text>
@@ -72,3 +85,4 @@ export default class MoviesComponent extends Component {
         );
     }
 }
+
