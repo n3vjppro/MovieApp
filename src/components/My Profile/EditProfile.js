@@ -56,7 +56,7 @@ export  class EditProfile extends React.Component {
                         </Button>
 
                         <Button
-                            title="DONE"
+                            title="APPLY"
                             style={{ backgroundColor: 'blue' }}>
                             onPress={() => { }}
                         </Button>
