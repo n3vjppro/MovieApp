@@ -3,25 +3,28 @@ import React, { Component } from 'react';
 
 import { TabNavigator, DrawerNavigator, StackNavigator, DrawerItems } from 'react-navigation'
 //import App from './App';
-import MoviesComponent from './src/components/MoviesComponent'
+import MovieStack from './src/components/MoviesComponent'
 import FavoritesComponent from './src/components/FavoritesComponent'
 import MyInfo from './src/components/My Profile/MyInfo'
 import { Movies, Favorites, Profile } from './screenNames'
 import HeaderComponent from './src/components/HeaderComponent';
 import EditProfile from './src/components/My Profile/EditProfile';
 import DrawerSlide from './src/components/DrawerSlide';
+import MoviesComponent from './src/components/MoviesComponent';
+
 
 var { height, width } = Dimensions.get('window');
 let routeConfigs = {
     Movies: {
-        screen: MoviesComponent,
+        screen: MovieStack,
+
     },
     Favorites: {
         screen: FavoritesComponent,
     }
 };
 
-let tabNavigatorConfig = {
+let tabNavigatorConfigs = {
 
     tabBarPosition: 'bottom',
     animationEnabled: true,
@@ -35,28 +38,29 @@ let tabNavigatorConfig = {
         inactiveTintColor: 'white',
     },
 }
-const MainScreenTabNavigator = TabNavigator(routeConfigs, tabNavigatorConfig);
+const MainScreenTabNavigator = TabNavigator(routeConfigs, tabNavigatorConfigs);
 
-export class MainScreenTab extends Component {
-    static navigationOptions = {
-        //drawerLabel: <MyInfo />
-    };
-    render() {
-        return (
-            <View style={{
-                flex: 1,
-                flexDirection: 'column'
-            }}>
-                <HeaderComponent {...this.props} />
-                <MainScreenTabNavigator />
-            </View>
-        );
-    }
-}
+// export class MainScreenTab extends Component {
+//     static navigationOptions = {
+//         //drawerLabel: <MyInfo />
+//     };
+//     render() {
+//         console.log('MainScreenTab', this.props.drawerNavigation);
+//         return (
+//             < View style={{
+//                 flex: 1,
+//                 flexDirection: 'column'
+//             }
+//             }>
+//                 < MainScreenTabNavigator  />
+//             </View >
+//         );
+//     }
+// }
 
 let drawerRouteConfigs = {
     MainScreenTab: {
-        screen: MainScreenTab,
+        screen: MainScreenTabNavigator,
     },
     EditProfile: {
         screen: EditProfile,
@@ -69,7 +73,7 @@ let drawerNavigatorConfig = {
     contentComponent: props => <DrawerSlide {...props} />,
 };
 
-const Draw = DrawerNavigator(drawerRouteConfigs,drawerNavigatorConfig);
+const Draw = DrawerNavigator(drawerRouteConfigs, drawerNavigatorConfig);
 
 // const RootNavigator =
 // StackNavigator({

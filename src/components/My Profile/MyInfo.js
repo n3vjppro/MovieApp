@@ -78,7 +78,7 @@ export default class MoviesComponent extends Component {
                 </View>
                 <TouchableOpacity
               onPress={() => this.props.navigation.navigate('EditProfile')}
-              style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: 'blue', height: 35, width: 80, alignSelf: 'center', borderRadius: 10 }}>
+              style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: '#4206ff', height: 35, width: 80, alignSelf: 'center', borderRadius: 10 }}>
                     <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>Edit</Text>
                 </TouchableOpacity>
             </View>

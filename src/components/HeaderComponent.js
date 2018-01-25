@@ -16,14 +16,15 @@ export default class HeaderComponent extends Component {
         return (
             <View
                 style={{
-                    height:60,
+                    height:32,
                     flexDirection:'row',
                     justifyContent:'flex-start',
-                    alignItems:'center'
+                    alignItems:'center',
+                    marginTop:10
                 }}
             >
             <TouchableOpacity
-                style={{marginLeft:10}}
+                style={{marginLeft:5}}
                 onPress={()=>{
                     const {navigate} = this.props.navigation;
                     navigate('DrawerOpen')
