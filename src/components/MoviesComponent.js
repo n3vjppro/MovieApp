@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { Text, Button, View, Image, FlatList, StyleSheet, TouchableOpacity, RefreshControl } from 'react-native';
+import { Text, Button, View, Image, FlatList, StyleSheet, TouchableOpacity, Dimensions, RefreshControl, Platform } from 'react-native';
 import HeaderComponent from './HeaderComponent'
 import { api_now_playing } from '../../api'
 import { StackNavigator } from 'react-navigation'
 import MoviesDetail from './MoviesDetail'
 import FavoritesComponent from './FavoritesComponent'
-
+import Modal from 'react-native-modalbox'
+import GridList from 'react-native-grid-list';
 
 export class MoviesComponent extends Component {
     constructor(props) {
@@ -16,24 +17,24 @@ export class MoviesComponent extends Component {
             refreshing: false,
             page: 1,
             favoriteList: [],
-            grid:false,
-            
+            grid: true,
         }
     }
-    static navigationOptions =({navigation})=> {
+    static navigationOptions = ({ navigation }) => {
         //const { params = {} } = navigation.state;
         //const {setParams} = this.props.navigation;
-        //console.log(this.props.navigation.state)
-        let tabBarIcon= (
+        //console.log(navigation)
+        let tabBarIcon = (
             <Image
                 source={require('../icons/home.png')}
                 style={{ width: 26, height: 26 }}
             ></Image>
         );
-        let headerRight= (
+        let headerRight = (
             <TouchableOpacity
-                onPress={() => console.log(this.setState({grid:true}))}
-                
+                onPress={() => navigation.state.params.handleGrid()
+
+                }
             >
                 <Image
                     style={{ width: 30, height: 30 }}
@@ -41,7 +42,11 @@ export class MoviesComponent extends Component {
                 />
             </TouchableOpacity>
         );
-        return{tabBarIcon, headerRight}
+        let headerTitle = (
+            <TouchableOpacity
+                onPress={() => navigation.state.params.handleModal()}
+            ><Text >Now Playing</Text></TouchableOpacity>);
+        return { tabBarIcon, headerRight, headerTitle }
 
         //let tabBarLabel = 'Movies';
     }
@@ -49,6 +54,10 @@ export class MoviesComponent extends Component {
 
     componentDidMount() {
         this.refreshData();
+        this.props.navigation.setParams({ 
+            handleGrid: this._gridMode.bind(this),
+ handleModal: this._moviesModal.bind(this),
+        })
     }
 
     refreshData = () => {
@@ -84,45 +93,83 @@ export class MoviesComponent extends Component {
     updateFavoriteList = (item) => {
         // this. ({favoriteList:this.state.favoriteList})
         this.setState({ favoriteList: [...this.state.favoriteList, item] })
-        console.log("AAA", this.state.favoriteList)
+        //console.log("AAA", this.state.favoriteList)
     }
-    // _gridMode=()=>{
-    //     this.setState({grid:this.state.grid+1},()=>{ this.refreshData()});
-       
-    // }
+    _gridMode = () => {
+        this.setState({
+            grid: !this.state.grid,
+
+        },
+        );
+        //console.log("grid",this.state.grid)
+
+
+    }
+    _moviesModal = () => {
+        this.refs.moviesModal.showModal();
+    }
     render() {
         //console.log('drawer')
-        const {setParams} = this.props.navigation;
-        console.log(setParams)
-        
+        const { setParams } = this.props.navigation;
+        //console.log(setParams)
+
         return (
-            <View style={{ flex: 1, }}>
+            <View style={{ flex: 1 }}>
+                {this.state.grid ?
+                    <FlatList
+                        data={this.state.moviesList}
+                        numColumns={1}
+                        renderItem={({ item, index }) =>
+                            // <View>
+                            // <Text>{item.title}</Text>
+                            // </View>
+                            // }
 
-                <FlatList
-                    data={this.state.moviesList}
-                    renderItem={({ item, index }) =>
-                        // <View>
-                        // <Text>{item.title}</Text>
-                        // </View>
-                        // }
+                            //console.log(`item = ${JSON.stringify(item)}, index = ${index}`);
+                            <FlatListItem grid={this.state.grid} updateChild={this.updateFavoriteList} navigation={this.props.navigation} item={item} index={index} />
 
-                        //console.log(`item = ${JSON.stringify(item)}, index = ${index}`);
-                        <FlatListItem  grid={this.state.grid} updateChild={this.updateFavoriteList} navigation={this.props.navigation} item={item} index={index} />
+                        }
+                        keyExtractor={(item, index) => index}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={this.state.refreshing}
+                                onRefresh={this.onRefresh}
+                            />
+                        }
+                        onEndReached={this.loadMore}
+                        onEndReachedThreshold={3}
+                    >
 
-                    }
-                    keyExtractor={(item, index) => index}
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={this.state.refreshing}
-                            onRefresh={this.onRefresh}
-                        />
-                    }
-                    onEndReached={this.loadMore}
-                    onEndReachedThreshold={3}
-                >
+                    </FlatList>
+                    :
+                    <GridList
+                        data={this.state.moviesList}
+                        numColumns={2}
+                        renderItem={({ item, index }) =>
+                            // <View>
+                            // <Text>{item.title}</Text>
+                            // </View>
+                            // }
 
-                </FlatList>
+                            //console.log(`item = ${JSON.stringify(item)}, index = ${index}`);
+                            <FlatListItem grid={this.state.grid} updateChild={this.updateFavoriteList} navigation={this.props.navigation} item={item} index={index} />
 
+                        }
+                        keyExtractor={(item, index) => index}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={this.state.refreshing}
+                                onRefresh={this.onRefresh}
+                            />
+                        }
+                        onEndReached={this.loadMore}
+                        onEndReachedThreshold={3}
+
+                    >
+
+                    </GridList>
+                }
+                <MoviesModal ref={'moviesModal'} parentList={this}></MoviesModal>
 
             </View>
         );
@@ -130,15 +177,18 @@ export class MoviesComponent extends Component {
 }
 
 export class FlatListItem extends Component {
-    render() {console.log("aaaa",this.props.grid)
-    const {grid}= this.props;
+    render() {
+        var { height, width } = Dimensions.get('window');
+        //console.log("aaaa", this.props.grid)
+        const { grid } = this.props;
         return (
-            
+
             grid ?
                 <View style={{
                     flex: 1,
                     flexDirection: 'column',
-                    backgroundColor: this.props.index % 2 == 0 ? 'mediumseagreen' : 'tomato'
+                    backgroundColor: this.props.index % 2 == 0 ? 'mediumseagreen' : 'tomato',
+
                 }}>
                     <TouchableOpacity
                         onPress={
@@ -203,26 +253,53 @@ export class FlatListItem extends Component {
                     </TouchableOpacity>
                 </View>
                 :
-                <View style={{
-                    flex: 1,
-                    flexDirection: 'row',
-                    backgroundColor: this.props.index % 2 == 0 ? 'mediumseagreen' : 'tomato'
-                }}>
-                    <Image
-                        source={{ uri: 'https://image.tmdb.org/t/p/w185' + this.props.item.poster_path }}
-                        style={{ width: 200, height: 200, resizeMode: Image.resizeMode.contain, }}
+                <View
+                    style={{
+                        //    marginTop:10
+                        margin: 1
+                    }}
+                >
+                    <TouchableOpacity
+                        style={{
+                            backgroundColor: 'mediumseagreen',
+                            justifyContent: 'center'
+
+                        }}
+                        onPress={
+                            () =>
+                                this.props.navigation.navigate('DetailMovie', { detail: this.props.item })
+
+                        }
+
                     >
 
-                    </Image>
+                        <Text style={styles.flatListItemTitle}  >{this.props.item.title}</Text>
+                        <Image
+                            source={{ uri: 'https://image.tmdb.org/t/p/w185' + this.props.item.poster_path }}
+                            style={{ marginBottom: 3, width: 140, height: 140, resizeMode: Image.resizeMode.contain }}
+                        >
+
+                        </Image>
+                        <View style={{
+
+                            height: 1,
+
+                            backgroundColor: 'white'
+                        }}>
+
+                        </View>
+                    </TouchableOpacity>
                 </View>
+
         );
     }
 }
 const styles = StyleSheet.create({
     flatListItemTitle: {
+        height: 35,
         color: 'black',
         padding: 3,
-        fontSize: 16,
+        fontSize: 13,
         fontWeight: 'bold',
         marginLeft: 5,
 
@@ -243,9 +320,9 @@ const styles = StyleSheet.create({
 
 const MovieStack = StackNavigator({
     Movies: {
-        screen:  MoviesComponent ,
+        screen: MoviesComponent,
         navigationOptions: ({ navigation }) => ({
-            title: "Movies",
+
             headerLeft: (
                 <TouchableOpacity onPress={() => navigation.navigate("DrawerOpen")}>
                     <Image
@@ -254,7 +331,7 @@ const MovieStack = StackNavigator({
                     />
                 </TouchableOpacity>
             ),
-            
+
 
         })
 
@@ -272,3 +349,34 @@ const MovieStack = StackNavigator({
 );
 
 export default MovieStack;
+
+export class MoviesModal extends Component {
+    constructor(props) {
+        super(props);
+    }
+    showModal = () => {
+        this.refs.myModal.open();
+    }
+    render() {
+        return (
+            <Modal
+                ref={"myModal"}
+                style={{
+                    justifyContent: 'center',
+                    borderRadius: Platform.OS === 'ios' ? 15 : 0,
+                    shadowRadius: 10,
+                    width: 280,
+                    height: 280,
+
+                }}
+                position='center'
+                backdrop={true}
+                onClosed={() => {
+                    alert("close")
+                }}
+            >
+                <Text>Change Movies</Text>
+            </Modal>
+        );
+    }
+}
