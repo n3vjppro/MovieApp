@@ -118,7 +118,8 @@ export default class EditProfile extends React.Component {
     _hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
 
     _handleDatePicked = (date) => {
-        var bd = date.getDate() + "-" + date.getMonth() + 1 + "-" + date.getFullYear();
+        var month = date.getMonth()+ 1;
+        var bd = date.getDate() + "-" + month + "-" + date.getFullYear();
         this.setState({ textBirthDay: bd })
         //console.log('A date has been picked: ', this.state.textBirthDay);
         this._hideDateTimePicker();
