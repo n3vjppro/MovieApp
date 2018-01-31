@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {
     Text, View, Image,
-    Dimensions, TouchableOpacity
+    Dimensions, TouchableOpacity,AsyncStorage
 } from 'react-native';
 
 export default class MoviesComponent extends Component {
@@ -9,13 +9,43 @@ export default class MoviesComponent extends Component {
         super(props);
         this.state = {
             avatarSource: null,
+            email:'',
+            name:'',
+            sex:0,
+            birthDay:''
         }
     }
-
+    getData= async()=>{
+        try {
+            console.log('value');
+        const value = await AsyncStorage.getItem('userInfo');
+        if (value !== null){
+           // console.log(JSON.parse(value));
+         this.setState({
+             name : JSON.parse(value).name,
+             email: JSON.parse(value).email,
+             birthDay:    JSON.parse(value).birthday,
+             sex:JSON.parse(value).sex,   
+             avatarSource:JSON.parse(value).avatar,      
+            }) 
+        //console.log(value);
+        }
+      } catch (error) {
+        // Error retrieving data
+      }
+    }
+componentDidMount(){
+    this.getData();
+    //console.log('nahn');
+}
+componentDidUpdate(){
+    this.getData();
+}
    
 
     render() {
         var { height, width } = Dimensions.get('window');
+        
         return (
             <View>
                 <View style={{
@@ -24,7 +54,7 @@ export default class MoviesComponent extends Component {
                     alignItems: 'center',
                     // justifyContent: 'center' 
                 }}>
-                    {this.state.avatarSource === null ?
+                    {this.state.avatarSource == null ?
                                 <Image
                                     source={require('../../icons/ava.jpg')}
                                     style={{ width: width / 2, height: width / 2, borderRadius: 90, marginTop: 34 }}
@@ -34,7 +64,7 @@ export default class MoviesComponent extends Component {
                             }
 
                     <View style={{ backgroundColor: 'white', alignItems: 'center', justifyContent: 'center' }}>
-                        <Text>Name</Text>
+                        <Text>{this.state.name}</Text>
                     </View>
                 </View>
                 <View
@@ -47,7 +77,7 @@ export default class MoviesComponent extends Component {
                     <View style={{ backgroundColor: 'white', alignSelf: 'center' }}>
                         <Text
                             style={{ marginLeft: 10 }}
-                        >01-12-1995</Text>
+                        >{this.state.birthDay}</Text>
                     </View>
                 </View>
                 <View
@@ -60,7 +90,7 @@ export default class MoviesComponent extends Component {
                     <View style={{ backgroundColor: 'white', alignSelf: 'center' }}>
                         <Text
                             style={{ marginLeft: 10 }}
-                        >ngongocnhan.95@gmail.com</Text>
+                        >{this.state.email}</Text>
                     </View>
                 </View>
                 <View
@@ -73,7 +103,7 @@ export default class MoviesComponent extends Component {
                     <View style={{ backgroundColor: 'white', alignSelf: 'center' }}>
                         <Text
                             style={{ marginLeft: 10 }}
-                        >Boy</Text>
+                        >{this.state.sex==1?'Male':'Female'}</Text>
                     </View>
                 </View>
                 <TouchableOpacity
