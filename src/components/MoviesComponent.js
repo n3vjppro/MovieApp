@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { Text, Button, View, Image, FlatList, StyleSheet, TouchableOpacity, Dimensions, RefreshControl, Platform } from 'react-native';
+import { Text, AsyncStorage, Button, View, Image, FlatList, StyleSheet, TouchableOpacity, Dimensions, RefreshControl, Platform } from 'react-native';
 import HeaderComponent from './HeaderComponent'
-import { api_now_playing } from '../../api'
+import { api_now_playing, api_popular_movies, api_top_rated, api_upcoming } from '../../api'
 import { StackNavigator } from 'react-navigation'
 import MoviesDetail from './MoviesDetail'
 import FavoritesComponent from './FavoritesComponent'
@@ -18,6 +18,8 @@ export class MoviesComponent extends Component {
             page: 1,
             favoriteList: [],
             grid: true,
+            catMovies: api_now_playing,
+            movieTitle: 'Now Playing',
         }
     }
     static navigationOptions = ({ navigation }) => {
@@ -45,7 +47,7 @@ export class MoviesComponent extends Component {
         let headerTitle = (
             <TouchableOpacity
                 onPress={() => navigation.state.params.handleModal()}
-            ><Text >Now Playing</Text></TouchableOpacity>);
+            ><Text >Movies</Text></TouchableOpacity>);
         return { tabBarIcon, headerRight, headerTitle }
 
         //let tabBarLabel = 'Movies';
@@ -54,9 +56,10 @@ export class MoviesComponent extends Component {
 
     componentDidMount() {
         this.refreshData();
-        this.props.navigation.setParams({ 
+        this.props.navigation.setParams({
             handleGrid: this._gridMode.bind(this),
- handleModal: this._moviesModal.bind(this),
+            handleModal: this._moviesModal.bind(this),
+            movieTitles: this.state.movieTitle,
         })
     }
 
@@ -64,7 +67,7 @@ export class MoviesComponent extends Component {
         const { page } = this.state;
         this.setState({ refreshData: true })
         setTimeout(() => {
-            fetch(api_now_playing + page)
+            fetch(this.state.catMovies + page)
                 .then((response) => response.json())
                 .then((responseJson) => {
                     this.setState({ moviesList: [...this.state.moviesList, ...responseJson.results] })
@@ -90,10 +93,19 @@ export class MoviesComponent extends Component {
                 this.refreshData();
             })
     }
-    updateFavoriteList = (item) => {
-        // this. ({favoriteList:this.state.favoriteList})
-        this.setState({ favoriteList: [...this.state.favoriteList, item] })
-        //console.log("AAA", this.state.favoriteList)
+    updateFavoriteList = async (item) => {
+
+        this.setState({ favoriteList: this.state.favoriteList.concat(item)})
+        try {
+            await AsyncStorage.setItem('favoriteList', JSON.stringify(this.state.favoriteList));
+            //MyInfo.updater.enqueueForceUpdate(MyInfo);                
+
+            console.log("aa", item)
+            console.log("bb", this.state.favoriteList)
+        } catch (error) {
+            // Error saving data
+
+        }
     }
     _gridMode = () => {
         this.setState({
@@ -108,6 +120,15 @@ export class MoviesComponent extends Component {
     _moviesModal = () => {
         this.refs.moviesModal.showModal();
     }
+    _chooseCatMovie = (catMovies) => {
+        this.setState({ catMovies: catMovies, moviesList: [], page: 1 },
+            () => {
+                this.refreshData();
+            })
+        console.log("category", catMovies + this.state.page)
+
+    }
+
     render() {
         //console.log('drawer')
         const { setParams } = this.props.navigation;
@@ -169,7 +190,7 @@ export class MoviesComponent extends Component {
 
                     </GridList>
                 }
-                <MoviesModal ref={'moviesModal'} parentList={this}></MoviesModal>
+                <MoviesModal choosedCat={this.state.catMovies} chooseCat={this._chooseCatMovie} ref={'moviesModal'} parentList={this}></MoviesModal>
 
             </View>
         );
@@ -365,17 +386,75 @@ export class MoviesModal extends Component {
                     justifyContent: 'center',
                     borderRadius: Platform.OS === 'ios' ? 15 : 0,
                     shadowRadius: 10,
-                    width: 280,
-                    height: 280,
-
+                    width: 200,
+                    height: 200,
+                    alignItems: 'center',
+                    backgroundColor: 'rgba(60,	179,	113, 0.8)'
                 }}
                 position='center'
                 backdrop={true}
-                onClosed={() => {
-                    alert("close")
-                }}
+
             >
-                <Text>Change Movies</Text>
+                <TouchableOpacity
+                    style={{ marginBottom: 10 }}
+                    onPress={
+
+                        () => {
+                            this.props.chooseCat(api_now_playing);
+                            this.refs.myModal.close();
+                        }
+                    }
+                ><Text style={
+                    this.props.choosedCat == api_now_playing ?
+                        {
+                            fontWeight: 'bold'
+                        } : {}}>
+                        Now Playing Movies</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={{ marginBottom: 10 }}
+                    onPress={
+
+                        () => {
+                            this.props.chooseCat(api_popular_movies);
+                            this.refs.myModal.close();
+                        }
+                    }
+                ><Text style={
+                    this.props.choosedCat == api_popular_movies ?
+                        {
+                            fontWeight: 'bold'
+                        } : {}}>Popular Movies</Text></TouchableOpacity>
+
+
+                <TouchableOpacity
+                    style={{ marginBottom: 10 }}
+                    onPress={
+
+                        () => {
+                            this.props.chooseCat(api_upcoming);
+                            this.refs.myModal.close();
+                        }
+                    }
+                ><Text style={
+                    this.props.choosedCat == api_upcoming ?
+                        {
+                            fontWeight: 'bold'
+                        } : {}}>Upcoming Movies</Text></TouchableOpacity>
+                <TouchableOpacity
+                    style={{ marginBottom: 7 }}
+                    onPress={
+
+                        () => {
+                            this.props.chooseCat(api_top_rated);
+                            this.refs.myModal.close();
+                        }
+                    }
+                ><Text style={
+                    this.props.choosedCat == api_top_rated ?
+                        {
+                            fontWeight: 'bold'
+                        } : {}}>Top Rated Movies</Text></TouchableOpacity>
             </Modal>
         );
     }
