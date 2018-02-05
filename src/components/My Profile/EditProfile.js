@@ -152,9 +152,7 @@ export default class EditProfile extends React.Component {
                             style={{ backgroundColor: 'blue' }}
                             onPress={
                                 this._updateProfile
-                                // 
-
-
+                               
                             }>
                         </Button>
                     </View>

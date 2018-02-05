@@ -7,6 +7,8 @@ import MoviesDetail from './MoviesDetail'
 import FavoritesComponent from './FavoritesComponent'
 import Modal from 'react-native-modalbox'
 import GridList from 'react-native-grid-list';
+import { insertNewFavorite } from './database/allSchemas'
+import realm from './database/allSchemas'
 
 export class MoviesComponent extends Component {
     constructor(props) {
@@ -20,6 +22,7 @@ export class MoviesComponent extends Component {
             grid: true,
             catMovies: api_now_playing,
             movieTitle: 'Now Playing',
+            love: false,
         }
     }
     static navigationOptions = ({ navigation }) => {
@@ -93,19 +96,31 @@ export class MoviesComponent extends Component {
                 this.refreshData();
             })
     }
-    updateFavoriteList = async (item) => {
-
-        this.setState({ favoriteList: this.state.favoriteList.concat(item)})
-        try {
-            await AsyncStorage.setItem('favoriteList', JSON.stringify(this.state.favoriteList));
-            //MyInfo.updater.enqueueForceUpdate(MyInfo);                
-
-            console.log("aa", item)
-            console.log("bb", this.state.favoriteList)
-        } catch (error) {
-            // Error saving data
-
+    updateFavoriteList = (item) => {
+        let favoriteList = {
+            title: item.title,
+            id: item.id,
+            overview: item.overview,
+            release_date:item.release_date,
+            poster_path: item.poster_path,
+            love:true,
         }
+         insertNewFavorite(favoriteList).then(
+             alert('ddd')
+         ).catch((error)=>{
+            alert(error)
+        });
+        // try {
+        //     cc = await AsyncStorage.setItem('favoriteList', JSON.stringify(this.state.favoriteList));
+        //     //MyInfo.updater.enqueueForceUpdate(MyInfo);                
+
+        //     console.log("aa", item)
+        //     console.log("bb", this.state.favoriteList)
+        //     console.log(cc)
+        // } catch (error) {
+        //     // Error saving data
+
+        // }
     }
     _gridMode = () => {
         this.setState({
@@ -226,9 +241,10 @@ export class FlatListItem extends Component {
                         }}>
                             <Text style={styles.flatListItemTitle}  >{this.props.item.title}</Text>
                             <TouchableOpacity
-                                onPress={() => {
-                                    this.props.updateChild(this.props.item);
-                                }}
+                            onPress={() => {
+
+                                this.props.updateChild(this.props.item);
+                            }}
                             >
                                 <Image
                                     style={{ width: 22, height: 22, marginTop: 3, marginRight: 5 }}

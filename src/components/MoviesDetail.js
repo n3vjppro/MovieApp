@@ -40,7 +40,7 @@ export default class MoviesDetail extends Component {
             }}>
 
                 <Image
-                    source={{ uri: 'https://image.tmdb.org/t/p/w640' + params.detail.backdrop_path }}
+                    source={{ uri: 'https://image.tmdb.org/t/p/w500' + params.detail.backdrop_path }}
                     style={{ width: width, height: 9 * width / 16, resizeMode: Image.resizeMode.stretch }}
                 >
 
