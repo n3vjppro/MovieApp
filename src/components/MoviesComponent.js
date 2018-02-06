@@ -264,11 +264,13 @@ export class FlatListItem extends Component {
                                     //this.props.updateChild(this.props.item);
 
                                     let favoriteList = {
-                                        title: item.title,
-                                        id: item.id,
-                                        overview: item.overview,
-                                        release_date: item.release_date,
-                                        poster_path: item.poster_path,
+                                        title: this.props.item.title,
+                                        id: this.props.item.id,
+                                        overview: this.props.item.overview,
+                                        release_date: this.props.item.release_date,
+                                        poster_path: this.props.item.poster_path,
+                                        backdrop_path:this.props.item.backdrop_path,
+                                        vote_average:this.props.item.vote_average+"",
                                         love: true,
                                     }
                                     insertNewFavorite(favoriteList).then(

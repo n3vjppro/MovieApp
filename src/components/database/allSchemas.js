@@ -12,6 +12,8 @@ export const FAVORITELIST = {
         release_date: { type: 'string' },
         poster_path: { type: 'string' },
         love: { type: 'bool', default: false },
+        backdrop_path:{ type: 'string' },
+        vote_average:{ type: 'string' },
     }
 }
 const databaseOptions = {
