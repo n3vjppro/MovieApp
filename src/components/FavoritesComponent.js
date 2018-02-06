@@ -44,7 +44,7 @@ let FlatListItem = props => {
             <TouchableOpacity
                 onPress={
                     () =>
-                        this.props.navigation.navigate('DetailMovie', { detail: item })
+                        props.navigation.navigate('DetailMovie', { detail: item })
 
                 }
 
@@ -183,7 +183,7 @@ export class FavoritesComponent extends Component {
                         
 
                         
-                        <FlatListItem  item={item} index={index}  />
+                        <FlatListItem  item={item} index={index} navigation={this.props.navigation} />
         }
                    // }
                     

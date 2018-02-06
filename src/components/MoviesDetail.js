@@ -14,7 +14,7 @@ export default class MoviesDetail extends Component {
         title: navigation.state.params.detail.title,
         tabBarIcon: (
             <Image
-                source={require('../icons/home.png')}
+                source={require('../icons/film.png')}
                 style={{ width: 26, height: 26 }}
             ></Image>
         )
@@ -25,7 +25,7 @@ export default class MoviesDetail extends Component {
         .then((response) => response.json())
         .then((responseJson) => {
             this.setState({ listCasts: responseJson.cast })
-            console.log(this.state.listCasts)
+            //console.log(this.state.listCasts)
         })
         .catch((error) => {
             console.log(error);
