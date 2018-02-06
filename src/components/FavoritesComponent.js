@@ -3,16 +3,18 @@ import { Text, Button, View, Image, FlatList, StyleSheet, TouchableOpacity, Refr
 
 import HeaderComponent from './HeaderComponent';
 import { Favorites } from '../../screenNames';
-import DetailFavorite from './DetailFavorite'
+import DetailFavorite from './DetailFavorite';
+import MoviesDetail from './MoviesDetail';
 import { StackNavigator } from 'react-navigation'
 import { updateFavorite, insertNewFavorite, deleteFavorite, queryAllFavorite } from './database/allSchemas'
  import realm from './database/allSchemas'
 
 
+
 let FlatListItem = props => {
     const { index, item } = props;
 
-    showUnloveConfirmation = () => {
+    showUnloveConfirmation = (id) => {
         Alert.alert(
             'UnFavorite',
             'Are yo sure?',
@@ -23,7 +25,9 @@ let FlatListItem = props => {
                 },
                 {
                     text: 'Yes', onPress: () => {
-
+                        deleteFavorite(id).then().catch(error=>{
+                            alert('Failed. Try again!')
+                        })
                     }
                 }
             ],
@@ -34,13 +38,13 @@ let FlatListItem = props => {
         <View style={{
             flex: 1,
             flexDirection: 'column',
-            backgroundColor: this.props.index % 2 == 0 ? 'mediumseagreen' : 'tomato',
+            backgroundColor: index % 2 == 0 ? 'mediumseagreen' : 'tomato',
 
         }}>
             <TouchableOpacity
                 onPress={
                     () =>
-                        this.props.navigation.navigate('DetailMovie', { detail: this.props.item })
+                        this.props.navigation.navigate('DetailMovie', { detail: item })
 
                 }
 
@@ -50,16 +54,16 @@ let FlatListItem = props => {
                     flexDirection: 'row',
                     justifyContent: 'space-between'
                 }}>
-                    <Text style={styles.flatListItemTitle}  >{this.props.item.title}</Text>
+                    <Text style={styles.flatListItemTitle}  >{item.title}</Text>
                     <TouchableOpacity
                         onPress={() => {
 
-                            this.showUnloveConfirmation;
+                            this.showUnloveConfirmation(item.id);
                         }}
                     >
                         <Image
                             style={{ width: 22, height: 22, marginTop: 3, marginRight: 5 }}
-                            source={require('../icons/heart-outline.png')}></Image>
+                            source={require('../icons/heart.png')}></Image>
                     </TouchableOpacity>
                 </View>
                 <View style={{
@@ -69,7 +73,7 @@ let FlatListItem = props => {
                     //backgroundColor: 'mediumseagreen'
                 }}>
                     <Image
-                        source={{ uri: 'https://image.tmdb.org/t/p/w185' + this.props.item.poster_path }}
+                        source={{ uri: 'https://image.tmdb.org/t/p/w185' + item.poster_path }}
                         style={{ width: 120, height: 120, resizeMode: Image.resizeMode.contain, }}
                     >
 
@@ -81,15 +85,15 @@ let FlatListItem = props => {
                     }}>
                         <View style={{ flexDirection: 'row' }}>
                             <Text style={styles.flatListItemSub}>Release date:</Text>
-                            <Text style={styles.flatListItemDetail}>{this.props.item.release_date}</Text>
+                            <Text style={styles.flatListItemDetail}>{item.release_date}</Text>
                         </View>
                         <View style={{ flexDirection: 'row' }}>
                             <Text style={styles.flatListItemSub}>Rating:</Text>
-                            <Text style={styles.flatListItemDetail}>{this.props.item.vote_average}</Text>
+                            <Text style={styles.flatListItemDetail}>{item.vote_average}</Text>
                         </View>
 
                         <Text style={styles.flatListItemSub}>Overview:</Text>
-                        <Text numberOfLines={3} style={styles.flatListItemDetail}>{this.props.item.overview}</Text>
+                        <Text numberOfLines={3} style={styles.flatListItemDetail}>{item.overview}</Text>
                     </View>
                 </View>
                 <View style={{
@@ -136,10 +140,10 @@ export class FavoritesComponent extends Component {
             favoriteList: [],
             love: false,
         };
-        // this.reloadData();
-        // realm.addListener('change', () => {
-        //     this.reloadData();
-        // })
+        this.reloadData();
+        realm.addListener('change', () => {
+            this.reloadData();
+        })
     }
 
     static navigationOptions = ({ navigation }) => {
@@ -155,7 +159,9 @@ export class FavoritesComponent extends Component {
     }
     reloadData = () => {
         queryAllFavorite().then((favoriteList) => {
+            console.log(favoriteList)
             this.setState({ favoriteList:favoriteList });
+            console.log(this.state.favoriteList)
         }).catch((error) => {
             this.setState({ favoriteList: [] })
         });
@@ -165,20 +171,22 @@ export class FavoritesComponent extends Component {
         return (
             <View >
 
-                {/* <FlatList
+                <FlatList
                     data={this.state.favoriteList}
                     numColumns={1}
+                    keyExtractor={(item, index) => item.id}
                     renderItem={({ item, index }) =>
                         // <View>
                         // <Text>{item.title}</Text>
+                        // {console.log(`item = ${JSON.stringify(item)}, index = ${index}`)}
                         // </View>
-                        // }
+                        
 
-                        //console.log(`item = ${JSON.stringify(item)}, index = ${index}`);
-                        <FlatListItem  item={...item} index={index} />
-
-                    }
-                    keyExtractor={item => item.id}
+                        
+                        <FlatListItem  item={item} index={index}  />
+        }
+                   // }
+                    
                     // refreshControl={
                     //     <RefreshControl
                     //         refreshing={this.state.refreshing}
@@ -189,8 +197,8 @@ export class FavoritesComponent extends Component {
                     // onEndReachedThreshold={3}
                 >
 
-                </FlatList> */}
-                <Text>aa</Text>
+                </FlatList>
+                
             </View>
         );
     }
@@ -215,9 +223,9 @@ const FavoriteStack = StackNavigator({
 
         // screen: MoviesComponent
     },
-    DetailFavorite: {
+    DetailMovie: {
 
-        screen: DetailFavorite,
+        screen: MoviesDetail,
     },
 },
     {

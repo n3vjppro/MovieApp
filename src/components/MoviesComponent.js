@@ -7,7 +7,7 @@ import MoviesDetail from './MoviesDetail'
 import FavoritesComponent from './FavoritesComponent'
 import Modal from 'react-native-modalbox'
 import GridList from 'react-native-grid-list';
-import { insertNewFavorite } from './database/allSchemas'
+import { insertNewFavorite, queryAllFavorite, updateFavoriteList,deleteFavorite } from './database/allSchemas'
 import realm from './database/allSchemas'
 
 export class MoviesComponent extends Component {
@@ -23,7 +23,12 @@ export class MoviesComponent extends Component {
             catMovies: api_now_playing,
             movieTitle: 'Now Playing',
             love: false,
+            source: '../icons/heart-outline.png',
         }
+        this.loadData();
+        realm.addListener('change', () => {
+            this.loadData();
+        })
     }
     static navigationOptions = ({ navigation }) => {
         //const { params = {} } = navigation.state;
@@ -96,18 +101,31 @@ export class MoviesComponent extends Component {
                 this.refreshData();
             })
     }
+
+    loadData = () => {
+        queryAllFavorite().then((favoriteList) => {
+            console.log(favoriteList)
+            this.setState({ favoriteList: favoriteList });
+            console.log(this.state.favoriteList)
+        }).catch((error) => {
+            this.setState({ favoriteList: [] })
+        });
+        console.log('loadData', this.state.favoriteList)
+    }
+
     updateFavoriteList = (item) => {
+
         let favoriteList = {
             title: item.title,
             id: item.id,
             overview: item.overview,
-            release_date:item.release_date,
+            release_date: item.release_date,
             poster_path: item.poster_path,
-            love:true,
+            love: true,
         }
-         insertNewFavorite(favoriteList).then(
-             alert('ddd')
-         ).catch((error)=>{
+        insertNewFavorite(favoriteList).then(
+            alert("Success!")
+        ).catch((error) => {
             alert(error)
         });
         // try {
@@ -241,10 +259,25 @@ export class FlatListItem extends Component {
                         }}>
                             <Text style={styles.flatListItemTitle}  >{this.props.item.title}</Text>
                             <TouchableOpacity
-                            onPress={() => {
+                                onPress={() => {
 
-                                this.props.updateChild(this.props.item);
-                            }}
+                                    //this.props.updateChild(this.props.item);
+
+                                    let favoriteList = {
+                                        title: item.title,
+                                        id: item.id,
+                                        overview: item.overview,
+                                        release_date: item.release_date,
+                                        poster_path: item.poster_path,
+                                        love: true,
+                                    }
+                                    insertNewFavorite(favoriteList).then(
+                                        this.setState({ source: '../icons/heart.png' })
+                                    ).catch((error) => {
+                                        this.setState({ source: '../icons/heart-outline.png' })
+                                        alert(error)
+                                    });
+                                }}
                             >
                                 <Image
                                     style={{ width: 22, height: 22, marginTop: 3, marginRight: 5 }}
