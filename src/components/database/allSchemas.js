@@ -57,4 +57,10 @@ export const queryAllFavorite = () => new Promise((resolve, reject) => {
     }).catch((error) => reject(error))
 });
 
+export const queryItemFavorite = queryItemFavorite => new Promise((resolve, reject)=>{
+    Realm.open(databaseOptions).then(realm => {
+        let queryItem = realm.objectForPrimaryKey(FAVORITELIST_SCHEMA, queryItemFavorite)
+        resolve(queryItem)
+    }).catch((error)=>reject(error))
+});
 export default new Realm(databaseOptions);

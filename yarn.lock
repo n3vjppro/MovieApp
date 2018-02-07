@@ -3830,6 +3830,12 @@ react-native-modalbox@^1.4.2:
     create-react-class "^15.6.0"
     prop-types "^15.5.10"
 
+react-native-search-box@^0.0.13:
+  version "0.0.13"
+  resolved "https://registry.yarnpkg.com/react-native-search-box/-/react-native-search-box-0.0.13.tgz#75b5d21ecfb5d5dc12e26fac85b1225b48070f90"
+  dependencies:
+    prop-types "^15.5.10"
+
 react-native-swipeout@^2.3.3:
   version "2.3.3"
   resolved "https://registry.yarnpkg.com/react-native-swipeout/-/react-native-swipeout-2.3.3.tgz#3b99db845ef75f0bfa467f1d8de0b7f7946326bd"

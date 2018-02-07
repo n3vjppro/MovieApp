@@ -7,7 +7,7 @@ import MoviesDetail from './MoviesDetail'
 import FavoritesComponent from './FavoritesComponent'
 import Modal from 'react-native-modalbox'
 import GridList from 'react-native-grid-list';
-import { insertNewFavorite, queryAllFavorite, updateFavoriteList,deleteFavorite } from './database/allSchemas'
+import { insertNewFavorite, queryAllFavorite, updateFavoriteList, deleteFavorite, queryItemFavorite } from './database/allSchemas'
 import realm from './database/allSchemas'
 
 export class MoviesComponent extends Component {
@@ -23,7 +23,7 @@ export class MoviesComponent extends Component {
             catMovies: api_now_playing,
             movieTitle: 'Now Playing',
             love: false,
-            source: '../icons/heart-outline.png',
+            source: '',
         }
         this.loadData();
         realm.addListener('change', () => {
@@ -107,6 +107,7 @@ export class MoviesComponent extends Component {
             console.log(favoriteList)
             this.setState({ favoriteList: favoriteList });
             console.log(this.state.favoriteList)
+            
         }).catch((error) => {
             this.setState({ favoriteList: [] })
         });
@@ -231,8 +232,29 @@ export class MoviesComponent extends Component {
 }
 
 export class FlatListItem extends Component {
+    constructor(props) {
+
+        super(props);
+        this.state = {
+
+            source: '',
+        }
+    }
+    componentDidMount() {
+
+        queryItemFavorite(this.props.item.id).then(
+            obj => {
+                obj != null ? this.setState({ source: '../icons/heart.png' }) : this.setState({ source: '../icons/heart-outline.png' })
+                console.log(this.state.source)
+            }
+        ).catch((error) =>
+            alert(error)
+            )
+    }
+
     render() {
         var { height, width } = Dimensions.get('window');
+
         //console.log("aaaa", this.props.grid)
         const { grid } = this.props;
         return (
@@ -247,7 +269,7 @@ export class FlatListItem extends Component {
                     <TouchableOpacity
                         onPress={
                             () =>
-                                this.props.navigation.navigate('DetailMovie', { detail: this.props.item })
+                                this.props.navigation.navigate('DetailMovie', { detail: this.props.item, source:this.state.source })
 
                         }
 
@@ -269,21 +291,35 @@ export class FlatListItem extends Component {
                                         overview: this.props.item.overview,
                                         release_date: this.props.item.release_date,
                                         poster_path: this.props.item.poster_path,
-                                        backdrop_path:this.props.item.backdrop_path,
-                                        vote_average:this.props.item.vote_average+"",
+                                        backdrop_path: this.props.item.backdrop_path,
+                                        vote_average: this.props.item.vote_average + "",
                                         love: true,
                                     }
-                                    insertNewFavorite(favoriteList).then(
-                                        this.setState({ source: '../icons/heart.png' })
-                                    ).catch((error) => {
-                                        this.setState({ source: '../icons/heart-outline.png' })
-                                        alert(error)
-                                    });
+                                    this.state.source != '../icons/heart.png' ?
+                                        insertNewFavorite(favoriteList).then(
+                                            this.setState({ source: '../icons/heart.png' })
+                                        ).catch((error) => {
+                                            this.setState({ source: '../icons/heart-outline.png' })
+                                            alert(error)
+                                        }) :
+                                        deleteFavorite(this.props.item.id).then(
+                                            this.setState({ source: '../icons/heart-outline.png' })
+                                        ).catch(error => {
+                                            this.setState({ source: '../icons/heart.png' })
+                                            alert('Failed. Try again!');
+                                        })
                                 }}
                             >
-                                <Image
+                                {this.state.source == '../icons/heart-outline.png' ? <Image
                                     style={{ width: 22, height: 22, marginTop: 3, marginRight: 5 }}
-                                    source={require('../icons/heart-outline.png')}></Image>
+                                    source={require('../icons/heart-outline.png')}
+                                >
+                                </Image> : <Image
+                                    style={{ width: 22, height: 22, marginTop: 3, marginRight: 5 }}
+                                    source={require('../icons/heart.png')}
+                                >
+                                    </Image>}
+
                             </TouchableOpacity>
                         </View>
                         <View style={{

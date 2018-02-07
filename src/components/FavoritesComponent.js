@@ -7,8 +7,8 @@ import DetailFavorite from './DetailFavorite';
 import MoviesDetail from './MoviesDetail';
 import { StackNavigator } from 'react-navigation'
 import { updateFavorite, insertNewFavorite, deleteFavorite, queryAllFavorite } from './database/allSchemas'
- import realm from './database/allSchemas'
-
+import realm from './database/allSchemas'
+import Search from 'react-native-search-box';
 
 
 let FlatListItem = props => {
@@ -25,7 +25,7 @@ let FlatListItem = props => {
                 },
                 {
                     text: 'Yes', onPress: () => {
-                        deleteFavorite(id).then().catch(error=>{
+                        deleteFavorite(id).then().catch(error => {
                             alert('Failed. Try again!')
                         })
                     }
@@ -44,7 +44,7 @@ let FlatListItem = props => {
             <TouchableOpacity
                 onPress={
                     () =>
-                        props.navigation.navigate('DetailMovie', { detail: item })
+                        props.navigation.navigate('DetailMovie', { detail: item, source:"../icons/heart.png" })
 
                 }
 
@@ -134,7 +134,7 @@ export class FavoritesComponent extends Component {
     constructor(props) {
 
         super(props);
-        this.state = {           
+        this.state = {
             refreshing: false,
             page: 1,
             favoriteList: [],
@@ -160,7 +160,7 @@ export class FavoritesComponent extends Component {
     reloadData = () => {
         queryAllFavorite().then((favoriteList) => {
             console.log(favoriteList)
-            this.setState({ favoriteList:favoriteList });
+            this.setState({ favoriteList: favoriteList });
             console.log(this.state.favoriteList)
         }).catch((error) => {
             this.setState({ favoriteList: [] })
@@ -180,25 +180,25 @@ export class FavoritesComponent extends Component {
                         // <Text>{item.title}</Text>
                         // {console.log(`item = ${JSON.stringify(item)}, index = ${index}`)}
                         // </View>
-                        
 
-                        
-                        <FlatListItem  item={item} index={index} navigation={this.props.navigation} />
-        }
-                   // }
-                    
-                    // refreshControl={
-                    //     <RefreshControl
-                    //         refreshing={this.state.refreshing}
-                    //         onRefresh={this.onRefresh}
-                    //     />
-                    // }
-                    // onEndReached={this.loadMore}
-                    // onEndReachedThreshold={3}
+
+
+                        <FlatListItem item={item} index={index} navigation={this.props.navigation} />
+                    }
+                // }
+
+                // refreshControl={
+                //     <RefreshControl
+                //         refreshing={this.state.refreshing}
+                //         onRefresh={this.onRefresh}
+                //     />
+                // }
+                // onEndReached={this.loadMore}
+                // onEndReachedThreshold={3}
                 >
 
                 </FlatList>
-                
+
             </View>
         );
     }
