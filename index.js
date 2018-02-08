@@ -11,7 +11,7 @@ import HeaderComponent from './src/components/HeaderComponent';
 import EditProfile from './src/components/My Profile/EditProfile';
 import DrawerSlide from './src/components/DrawerSlide';
 import MoviesComponent from './src/components/MoviesComponent';
-
+import Reminder from './src/components/Reminder'
 
 var { height, width } = Dimensions.get('window');
 let routeConfigs = {
@@ -21,6 +21,9 @@ let routeConfigs = {
     },
     Favorites: {
         screen: FavoritesComponent,
+    },
+    Reminder:{
+        screen: Reminder,
     }
 };
 
@@ -64,6 +67,9 @@ let drawerRouteConfigs = {
     },
     EditProfile: {
         screen: EditProfile,
+    },
+    Reminder:{
+        screen:Reminder,
     }
 };
 

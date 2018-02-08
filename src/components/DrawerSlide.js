@@ -13,16 +13,16 @@ export default class DrawerSlide extends Component {
         return (
             <View style={{ flex: 1, flexDirection: 'column', }}>
                 <MyInfo navigation={this.props.navigation} />
-                {/* <TouchableHighlight
+                 {/* <TouchableHighlight
                     onPress={() => this.props.navigation.navigate('EditProfile')}
                 >
                     <Text>Edit</Text>
-                </TouchableHighlight>
-                <TouchableHighlight
+                </TouchableHighlight> */}
+                {/* <TouchableHighlight
                     onPress={() => this.props.navigation.navigate('MainScreenTab')}
                 >
                     <Text>Home</Text>
-                </TouchableHighlight> */}
+                </TouchableHighlight>  */}
                 {/* <DrawerItems {...this.props} /> */}
             </View>
         );

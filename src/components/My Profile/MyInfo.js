@@ -110,6 +110,18 @@ export default class MoviesComponent extends Component {
                     style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: '#4206ff', height: 35, width: 80, alignSelf: 'center', borderRadius: 10 }}>
                     <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>Edit</Text>
                 </TouchableOpacity>
+                <View style={{margin:10}}>
+                    <Text style={{fontWeight:'bold', fontSize:17}}>Reminder List:</Text>
+                    <Text style={{backgroundColor:'lightblue', marginTop:3, padding:5}}>The Dark Tower</Text>
+                    <Text style={{backgroundColor:'lightblue', marginTop:3, padding:5}}>Annabelle</Text>
+                    
+                    <TouchableOpacity
+                    onPress={() => this.props.navigation.navigate('Reminder')}
+                    style={{ marginTop:5, justifyContent: 'center', alignItems: 'center', backgroundColor: '#4206ff', height: 35, width: 120, alignSelf: 'center', borderRadius: 10 }}>
+                    <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white', }}>Show All</Text>
+                </TouchableOpacity>
+                <Text style={{justifyContent: 'center', alignItems: 'center', alignSelf: 'center', marginTop:5 }}>Copyright@ENC 2018</Text>
+                </View>
             </View>
         );
     }
