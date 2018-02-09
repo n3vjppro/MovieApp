@@ -2,8 +2,10 @@ import React, { Component } from 'react';
 import { Text, Button, View, Image, FlatList, StyleSheet, TouchableOpacity, RefreshControl, Alert } from 'react-native';
 import HeaderComponent from './HeaderComponent';
 import {StackNavigator} from 'react-navigation'
-
-
+import DateTimePicker from 'react-native-modal-datetime-picker';
+import { deleteReminder, queryAllReminder } from './database/allSchemas'
+import realm from './database/allSchemas';
+import Swipeout from 'react-native-swipeout'
 
 let FlatListItem = props => {
     const { index, item } = props;
@@ -35,69 +37,57 @@ let FlatListItem = props => {
             backgroundColor: index % 2 == 0 ? 'mediumseagreen' : 'tomato',
 
         }}>
-            {/* <TouchableOpacity
-        //         onPress={
-        //             () =>
-        //                 props.navigation.navigate('DetailMovie', { detail: item, source:"../icons/heart.png" })
+            <Swipeout
+                // onPress={
+                //     () =>
+                //         props.navigation.navigate('DetailMovie', { detail: item, source:"../icons/heart.png" })
 
-        //         }
+                // }
 
-        //     >
-        //         <View style={{
-        //             flex: 1,
-        //             flexDirection: 'row',
-        //             justifyContent: 'space-between'
-        //         }}>
-        //             <Text style={styles.flatListItemTitle}  >{item.title}</Text>
-        //             <TouchableOpacity
-        //                 onPress={() => {
+            >
+                <View style={{
+                    flex: 1,
+                    flexDirection: 'row',
+                    justifyContent: 'space-between'
+                }}>
+                    <Text style={styles.flatListItemTitle}  >{item.title}</Text>
+                   
+                </View>
+                <View style={{
+                    padding: 5,
+                    flex: 1,
+                    flexDirection: 'row',
+                    //backgroundColor: 'mediumseagreen'
+                }}>
+                    <Image
+                        source={{ uri: 'https://image.tmdb.org/t/p/w185' + item.poster_path }}
+                        style={{ width: 120, height: 120, resizeMode: Image.resizeMode.contain, }}
+                    >
 
-        //                     this.showUnloveConfirmation(item.id);
-        //                 }}
-        //             >
-        //                 <Image
-        //                     style={{ width: 22, height: 22, marginTop: 3, marginRight: 5 }}
-        //                     source={require('../icons/heart.png')}></Image>
-        //             </TouchableOpacity>
-        //         </View>
-        //         <View style={{
-        //             padding: 5,
-        //             flex: 1,
-        //             flexDirection: 'row',
-        //             //backgroundColor: 'mediumseagreen'
-        //         }}>
-        //             <Image
-        //                 source={{ uri: 'https://image.tmdb.org/t/p/w185' + item.poster_path }}
-        //                 style={{ width: 120, height: 120, resizeMode: Image.resizeMode.contain, }}
-        //             >
+                    </Image>
+                    <View style={{
+                        flex: 1,
+                        flexDirection: 'column',
+                        //height: 150
+                    }}>
+                        <View style={{ flexDirection: 'row' }}>
+                            <Text style={styles.flatListItemSub}>Release date:</Text>
+                            <Text style={styles.flatListItemDetail}>{item.release_date}</Text>
+                        </View>
+                       
 
-        //             </Image>
-        //             <View style={{
-        //                 flex: 1,
-        //                 flexDirection: 'column',
-        //                 //height: 150
-        //             }}>
-        //                 <View style={{ flexDirection: 'row' }}>
-        //                     <Text style={styles.flatListItemSub}>Release date:</Text>
-        //                     <Text style={styles.flatListItemDetail}>{item.release_date}</Text>
-        //                 </View>
-        //                 <View style={{ flexDirection: 'row' }}>
-        //                     <Text style={styles.flatListItemSub}>Rating:</Text>
-        //                     <Text style={styles.flatListItemDetail}>{item.vote_average}</Text>
-        //                 </View>
+                        <Text style={styles.flatListItemSub}>Reminder:</Text>
+                        <Text numberOfLines={3} style={styles.flatListItemDetail}>{JSON.parse(item.remindTime)}</Text>
+                    </View>
+                </View>
+                <View style={{
+                    height: 1,
+                    backgroundColor: 'white'
+                }}>
 
-        //                 <Text style={styles.flatListItemSub}>Overview:</Text>
-        //                 <Text numberOfLines={3} style={styles.flatListItemDetail}>{item.overview}</Text>
-        //             </View>
-        //         </View>
-        //         <View style={{
-        //             height: 1,
-        //             backgroundColor: 'white'
-        //         }}>
-
-        //         </View>
-        //     </TouchableOpacity> */}
-            <Text>AAAA</Text>
+                </View>
+            </Swipeout>
+            
         </View>
     );
 }
@@ -132,11 +122,14 @@ export  class Reminder extends Component {
         this.state = {
             refreshing: false,
             page: 1,
-            favoriteList: [],
+            reminderList: [],
             love: false,
            
         };
-       
+        this.reloadData();
+        realm.addListener('change', () => {
+            this.reloadData();
+        })
     }
 
     static navigationOptions = ({ navigation }) => {
@@ -150,14 +143,25 @@ export  class Reminder extends Component {
         )
         return { tabBarLabel, tabBarIcon };
     }
+
+    reloadData = () => {
+        queryAllReminder().then((reminderList) => {
+            console.log(reminderList)
+            this.setState({ reminderList: reminderList });
+            //console.log(this.state.favoriteList)
+        }).catch((error) => {
+            this.setState({ reminderList: [] })
+        });
+        console.log('reload')
+    };
     
     render() {
         return (
-            //<HeaderComponent/>
+           
             <View >
 
-                {/* <FlatList
-                    data={this.state.favoriteList}
+                <FlatList
+                    data={this.state.reminderList}
                     numColumns={1}
                     keyExtractor={(item, index) => item.id}
                     renderItem={({ item, index }) =>
@@ -168,7 +172,7 @@ export  class Reminder extends Component {
 
 
 
-                        <FlatListItem item={item} index={index} navigation={this.props.navigation} />
+                        <FlatListItem item={item} index={index}  />
                     }
                 // }
 
@@ -182,8 +186,8 @@ export  class Reminder extends Component {
                 // onEndReachedThreshold={3}
                 >
 
-                </FlatList> */}
-                <Text>BBBB</Text>
+                </FlatList>
+                {/* <Text>BBBB</Text> */}
 
             </View>
         );

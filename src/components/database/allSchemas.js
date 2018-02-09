@@ -19,11 +19,13 @@ export const FAVORITELIST = {
 
 export const REMINDERLIST={
     name: REMINDERLIST_SCHEMA,
+    primaryKey: 'id',
     properties: {
         id: 'int',
         title: { type: 'string', indexed: true },
         release_date: { type: 'string' },
         remindTime: { type: 'string' },
+        poster_path:{type:'string'}
     }
 }
 
@@ -83,6 +85,12 @@ export const insertReminder = newFavorite => new Promise((resolve, reject) => {
             resolve(newFavorite)
         });
     }).catch((error) => reject(error));
+});
+export const queryAllReminder = () => new Promise((resolve, reject) => {
+    Realm.open(databaseOptions).then(realm => {
+        let allFavorite = realm.objects(REMINDERLIST_SCHEMA);
+        resolve(allFavorite);
+    }).catch((error) => reject(error))
 });
 
 export const deleteReminder = deleteFavoriteId => new Promise((resolve, reject) => {

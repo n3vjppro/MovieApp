@@ -1,14 +1,16 @@
 import React, { Component } from 'react';
-import { Text, View, Image, FlatList, StyleSheet, TouchableOpacity, Dimensions, ScrollView, Alert } from 'react-native';
+import { Text, View, Image, FlatList, StyleSheet, TouchableOpacity, Dimensions, ScrollView, Alert, AppState } from 'react-native';
 import { api_get_cast } from '../../api';
 import realm from './database/allSchemas';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import { insertNewFavorite, queryAllFavorite, updateFavoriteList, deleteFavorite, queryItemFavorite, insertReminder } from './database/allSchemas'
 import PushNotification from 'react-native-push-notification';
+import PushController from './PushController'
 
 export default class MoviesDetail extends Component {
     constructor(props) {
         super(props);
+        this.handleAppStateChange = this.handleAppStateChange.bind(this);
         this.state = {
             listCasts: [],
             source: '',
@@ -17,6 +19,7 @@ export default class MoviesDetail extends Component {
             reminderTime: '',
             isDateTimePickerVisible: false,
             date: new Date(),
+            title: ''
         }
         this.reloadData();
         realm.addListener('change', () => {
@@ -48,24 +51,31 @@ export default class MoviesDetail extends Component {
     });
     componentDidMount() {
 
-        PushNotification.configure({
-            
-                // (optional) Called when Token is generated (iOS and Android)
-                onRegister: function(token) {
-                    console.log( 'TOKEN:', token );
-                },
-            
-                // (required) Called when a remote or local notification is opened or received
-                onNotification: function(notification) {
-                    console.log( 'NOTIFICATION:', notification );}
-                });
-        this.setState({ source: this.props.navigation.state.params.source });
+        AppState.addEventListener('change', this.handleAppStateChange);
+
+
+        this.setState({
+            source: this.props.navigation.state.params.source,
+            title: this.props.navigation.state.params.detail.title
+        });
         console.log(this.state.source)
     };
+    componentWillUnmount() {
+        AppState.addEventListener('change', this.handleAppStateChange)
+    }
+    handleAppStateChange(appState) {
+        if (appState === 'background') {
+            console.log('app background', this.state.date)
+            PushNotification.localNotificationSchedule({
+                message: "You set a reminder for this film: " + this.state.title, // (required)
+                date: this.state.date // set Date TIme
+            });
+        }
+    }
     reloadData = () => {
         queryAllFavorite().then((favoriteList) => {
             console.log(favoriteList)
-            this.setState({ source: favoriteList });
+            this.setState({ favoriteList: favoriteList });
             console.log(this.state.favoriteList)
         }).catch((error) => {
             this.setState({ favoriteList: [] })
@@ -81,10 +91,10 @@ export default class MoviesDetail extends Component {
     _handleDatePicked = (date) => {
         var month = date.getMonth() + 1;
         var bd = date.getDate() + "-" + date.getHours() + "-" + date.getMinutes();
-       
+
         this.setState({ date: date })
 
-       
+
         //console.log('A date has been picked: ', this.state.textBirthDay);
         this._hideDateTimePicker();
     };
@@ -184,28 +194,28 @@ export default class MoviesDetail extends Component {
                     </View>
                     <TouchableOpacity
                         style={{ backgroundColor: '#208fff', justifyContent: 'center', borderRadius: 5, margin: 10 }}
-                        onPress={()=>{
+                        onPress={() => {
                             this._showDateTimePicker()
 
                             let reminderList = {
                                 title: params.detail.title,
                                 id: params.detail.id,
                                 release_date: params.detail.release_date,
-                                remindTime: JSON.stringify(this.state.date),                               
-                            
+                                remindTime: JSON.stringify(this.state.date),
+                                poster_path: params.detail.poster_path,
                             }
                             insertReminder(reminderList).then(
                                 {
-                                    
+
                                 }
                             ).catch((error) => {
-                                
-                                alert(error)
+
+                                alert('You added this film to Reminder. Please delete it before add again!')
                             })
 
                         }
-                    }
-                        
+                        }
+
 
                     >
                         <Text style={{ color: 'white', padding: 5 }}>REMINDER</Text>
@@ -216,6 +226,7 @@ export default class MoviesDetail extends Component {
                         onCancel={this._hideDateTimePicker}
                         mode='datetime'
                     />
+                    <PushController />
                 </View>
 
                 <View style={{
