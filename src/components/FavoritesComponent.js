@@ -25,7 +25,7 @@ let FlatListItem = props => {
                 },
                 {
                     text: 'Yes', onPress: () => {
-                        deleteFavorite(id).then().catch(error => {
+                        deleteFavorite(id).then(queryAllFavorite()).catch(error => {
                             alert('Failed. Try again!')
                         })
                     }
@@ -158,10 +158,22 @@ export class FavoritesComponent extends Component {
         return { tabBarLabel, tabBarIcon };
     }
     reloadData = () => {
-        queryAllFavorite().then((favoriteList) => {
-            console.log(favoriteList)
-            this.setState({ favoriteList: favoriteList });
+        queryAllFavorite().then(async(res) => {
+            let listFavourite = await res.map(item=>{
+              return {
+               id: item.id,
+               title: item.title,
+               vote_average: item.vote_average,
+               overview: item.overview,
+               release_date: item.release_date,
+               poster_path: item.poster_path,
+               backdrop_path: item.backdrop_path,
+              }
+            }) 
+            
+            this.setState({ favoriteList: listFavourite });
             console.log(this.state.favoriteList)
+            
         }).catch((error) => {
             this.setState({ favoriteList: [] })
         });

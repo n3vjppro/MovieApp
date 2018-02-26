@@ -103,9 +103,19 @@ export class MoviesComponent extends Component {
     }
 
     loadData = () => {
-        queryAllFavorite().then((favoriteList) => {
-            console.log(favoriteList)
-            this.setState({ favoriteList: favoriteList });
+        queryAllFavorite().then(async(res) => {
+            let listFavourite = await res.map(item=>{
+              return {
+               id: item.id,
+               title: item.title,
+               vote_average: item.vote_average,
+               overview: item.overview,
+               release_date: item.release_date,
+               poster_path: item.poster_path,
+              }
+            }) 
+            // console.log(favoriteList)
+            this.setState({ favoriteList: listFavourite });
             console.log(this.state.favoriteList)
             
         }).catch((error) => {
@@ -238,13 +248,29 @@ export class FlatListItem extends Component {
         this.state = {
 
             source: '',
+            love:false,
         }
+        this.loadData();
+        realm.addListener('change', () => {
+            this.loadData();
+        })
+    }
+
+    loadData = () => {
+        queryItemFavorite(this.props.item.id).then(
+            obj => {
+                obj != null ? this.setState({ source: '../icons/heart.png', love:true }) : this.setState({ source: '../icons/heart-outline.png',love:false })
+                console.log(this.state.source)
+            }
+        ).catch((error) =>
+            alert(error)
+            )
     }
     componentDidMount() {
 
         queryItemFavorite(this.props.item.id).then(
             obj => {
-                obj != null ? this.setState({ source: '../icons/heart.png' }) : this.setState({ source: '../icons/heart-outline.png' })
+                obj != null ? this.setState({ source: '../icons/heart.png', love:true }) : this.setState({ source: '../icons/heart-outline.png',love:false })
                 console.log(this.state.source)
             }
         ).catch((error) =>

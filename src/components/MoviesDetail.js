@@ -73,14 +73,34 @@ export default class MoviesDetail extends Component {
         }
     }
     reloadData = () => {
-        queryAllFavorite().then((favoriteList) => {
-            console.log(favoriteList)
-            this.setState({ favoriteList: favoriteList });
+        queryAllFavorite().then(async(res) => {
+            let listFavourite = await res.map(item=>{
+              return {
+               id: item.id,
+               title: item.title,
+               vote_average: item.vote_average,
+               overview: item.overview,
+               release_date: item.release_date,
+               poster_path: item.poster_path,
+              }
+            }) 
+            //console.log(favoriteList)
+            this.setState({ favoriteList: listFavourite });
             console.log(this.state.favoriteList)
+            
         }).catch((error) => {
             this.setState({ favoriteList: [] })
         });
         console.log('reload')
+
+        queryItemFavorite(this.props.navigation.state.params.detail.id).then(
+            obj => {
+                obj != null ? this.setState({ source: '../icons/heart.png' }) : this.setState({ source: '../icons/heart-outline.png' })
+                console.log(this.state.source)
+            }
+        ).catch((error) =>
+            alert(error)
+            )
     };
 
     //Date time picker

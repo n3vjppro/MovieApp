@@ -10,31 +10,31 @@ import Swipeout from 'react-native-swipeout'
 let FlatListItem = props => {
     const { index, item } = props;
 
-    showUnloveConfirmation = (id) => {
-        Alert.alert(
-            'UnFavorite',
-            'Are yo sure?',
-            [
-                {
-                    text: 'No', onPress: () => { },
-                    style: 'cancel'
-                },
-                {
-                    text: 'Yes', onPress: () => {
-                        deleteFavorite(id).then().catch(error => {
-                            alert('Failed. Try again!')
-                        })
-                    }
-                }
-            ],
-            { cancelable: true }
-        )
-    }
+    // showUnloveConfirmation = (id) => {
+    //     Alert.alert(
+    //         'UnFavorite',
+    //         'Are yo sure?',
+    //         [
+    //             {
+    //                 text: 'No', onPress: () => { },
+    //                 style: 'cancel'
+    //             },
+    //             {
+    //                 text: 'Yes', onPress: () => {
+    //                     deleteFavorite(id).then().catch(error => {
+    //                         alert('Failed. Try again!')
+    //                     })
+    //                 }
+    //             }
+    //         ],
+    //         { cancelable: true }
+    //     )
+    // }
     return (
         <View style={{
             flex: 1,
             flexDirection: 'column',
-            backgroundColor: index % 2 == 0 ? 'mediumseagreen' : 'tomato',
+            backgroundColor:  'mediumseagreen' ,
 
         }}>
             <Swipeout
@@ -48,7 +48,9 @@ let FlatListItem = props => {
                 <View style={{
                     flex: 1,
                     flexDirection: 'row',
-                    justifyContent: 'space-between'
+                    justifyContent: 'space-between',
+                    backgroundColor: 'mediumseagreen'
+                    
                 }}>
                     <Text style={styles.flatListItemTitle}  >{item.title}</Text>
                    
@@ -57,7 +59,7 @@ let FlatListItem = props => {
                     padding: 5,
                     flex: 1,
                     flexDirection: 'row',
-                    //backgroundColor: 'mediumseagreen'
+                    backgroundColor: 'mediumseagreen'
                 }}>
                     <Image
                         source={{ uri: 'https://image.tmdb.org/t/p/w185' + item.poster_path }}
