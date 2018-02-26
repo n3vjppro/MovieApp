@@ -31,8 +31,10 @@ let tabNavigatorConfigs = {
 
     tabBarPosition: 'bottom',
     animationEnabled: true,
+    
     swipeEnabled: true,
     tabBarOptions: {
+        showIcon: true,
         style: {
             padding: -10
         },

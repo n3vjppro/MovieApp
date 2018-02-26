@@ -30,6 +30,41 @@ let FlatListItem = props => {
     //         { cancelable: true }
     //     )
     // }
+
+    const swipeSettings = {
+        autoClose: true,
+        onClose: () => {
+                        
+        },          
+        onOpen: () => {
+            
+        },      
+        right: [
+            { 
+                onPress: () => {
+                    Alert.alert(
+                        'Alert',
+                        'Are you sure you want to delete this reminder?',
+                        [{
+                            text: 'Cancel',
+                            onPress: () => {
+                            }
+                        },
+                        {
+                            text: 'OK',
+                            onPress: () => {
+                                deleteReminder(item.id)
+                            }
+                        }]
+                    )
+                },
+                text: 'Delete',
+                type: 'delete'
+            }
+        ],  
+        rowId: index, 
+        sectionId: 1    
+    }; 
     return (
         <View style={{
             flex: 1,
@@ -38,13 +73,8 @@ let FlatListItem = props => {
 
         }}>
             <Swipeout
-                // onPress={
-                //     () =>
-                //         props.navigation.navigate('DetailMovie', { detail: item, source:"../icons/heart.png" })
-
-                // }
-
-            >
+                {...swipeSettings}
+                >
                 <View style={{
                     flex: 1,
                     flexDirection: 'row',

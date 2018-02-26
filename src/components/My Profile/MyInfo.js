@@ -3,6 +3,7 @@ import {
     Text, View, Image,
     Dimensions, TouchableOpacity, AsyncStorage
 } from 'react-native';
+import { deleteReminder, getReminderLimit } from '../database/allSchemas'
 
 export default class MoviesComponent extends Component {
     constructor(props) {
@@ -12,7 +13,8 @@ export default class MoviesComponent extends Component {
             email: '',
             name: '',
             sex: 0,
-            birthDay: ''
+            birthDay: '',
+            reminderList: []
         }
     }
     getData = async () => {
@@ -36,6 +38,13 @@ export default class MoviesComponent extends Component {
     componentDidMount() {
         this.getData();
         //console.log('nahn');
+        getReminderLimit().then((reminderList) => {
+                //console.log(reminderList)
+                this.setState({ reminderList: reminderList });
+                console.log(this.state.reminderList)
+            }).catch((error) => {
+                this.setState({ reminderList: [] })
+            })
     }
     componentDidUpdate() {
         this.getData();
@@ -44,7 +53,7 @@ export default class MoviesComponent extends Component {
 
     render() {
         var { height, width } = Dimensions.get('window');
-
+        
         return (
             <View>
                 <View style={{
@@ -110,17 +119,20 @@ export default class MoviesComponent extends Component {
                     style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: '#4206ff', height: 35, width: 80, alignSelf: 'center', borderRadius: 10 }}>
                     <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>Edit</Text>
                 </TouchableOpacity>
-                <View style={{margin:10}}>
-                    <Text style={{fontWeight:'bold', fontSize:17}}>Reminder List:</Text>
-                    <Text style={{backgroundColor:'lightblue', marginTop:3, padding:5}}>The Dark Tower</Text>
-                    <Text style={{backgroundColor:'lightblue', marginTop:3, padding:5}}>Annabelle</Text>
+                <View style={{ margin: 10 }}>
+                    <Text style={{ fontWeight: 'bold', fontSize: 17 }}>Reminder List:</Text>
+
                     
+
+                    <Text style={{ backgroundColor: 'lightblue', marginTop: 3, padding: 5 }}>{this.state.reminderList.title}</Text>
+                    <Text style={{ backgroundColor: 'lightblue', marginTop: 3, padding: 5 }}>Annabelle</Text>
+
                     <TouchableOpacity
-                    onPress={() => this.props.navigation.navigate('Reminder')}
-                    style={{ marginTop:5, justifyContent: 'center', alignItems: 'center', backgroundColor: '#4206ff', height: 35, width: 120, alignSelf: 'center', borderRadius: 10 }}>
-                    <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white', }}>Show All</Text>
-                </TouchableOpacity>
-                <Text style={{justifyContent: 'center', alignItems: 'center', alignSelf: 'center', marginTop:5 }}>Copyright@ENC 2018</Text>
+                        onPress={() => this.props.navigation.navigate('Reminder')}
+                        style={{ marginTop: 5, justifyContent: 'center', alignItems: 'center', backgroundColor: '#4206ff', height: 35, width: 120, alignSelf: 'center', borderRadius: 10 }}>
+                        <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white', }}>Show All</Text>
+                    </TouchableOpacity>
+                    <Text style={{ justifyContent: 'center', alignItems: 'center', alignSelf: 'center', marginTop: 5 }}>Copyright@ENC 2018</Text>
                 </View>
             </View>
         );

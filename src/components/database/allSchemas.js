@@ -102,4 +102,14 @@ export const deleteReminder = deleteFavoriteId => new Promise((resolve, reject) 
         });
     }).catch((error) => reject(error))
 });
+
+export const getReminderLimit = () => new Promise((resolve, reject) => {
+    Realm.open(databaseOptions).then(realm => {
+        let ReminderList = realm.objects(REMINDERLIST_SCHEMA)
+            .sorted('remindTime', true).slice(0, 2);
+        resolve(ReminderList);
+    }).catch((error) => {
+        reject(error);
+    });;
+});
 export default new Realm(databaseOptions);
