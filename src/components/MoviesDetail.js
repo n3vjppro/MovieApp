@@ -18,7 +18,7 @@ export default class MoviesDetail extends Component {
             love: true,
             reminderTime: '',
             isDateTimePickerVisible: false,
-            date: new Date(),
+            
             title: ''
         }
         this.reloadData();
@@ -58,49 +58,49 @@ export default class MoviesDetail extends Component {
             source: this.props.navigation.state.params.source,
             title: this.props.navigation.state.params.detail.title
         });
-       // console.log(this.state.source)
+        // console.log(this.state.source)
 
-       fetch(api_get_cast + this.props.navigation.state.params.detail.id + "/credits?api_key=0267c13d8c7d1dcddb40001ba6372235")
-       .then((response) => response.json())
-       .then((responseJson) => {
-           this.setState({ listCasts: responseJson.cast })
-           //console.log(this.state.listCasts)
-       })
-       .catch((error) => {
-           console.log(error);
-       });
+        fetch(api_get_cast + this.props.navigation.state.params.detail.id + "/credits?api_key=0267c13d8c7d1dcddb40001ba6372235")
+            .then((response) => response.json())
+            .then((responseJson) => {
+                this.setState({ listCasts: responseJson.cast })
+                //console.log(this.state.listCasts)
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     };
     componentWillUnmount() {
         AppState.addEventListener('change', this.handleAppStateChange)
     }
     handleAppStateChange(appState) {
         if (appState === 'background') {
-            console.log('app background', this.state.date)
+            //console.log('app background', this.state.date)
             PushNotification.localNotificationSchedule({
-                id:this.props.navigation.state.params.detail.id.toString(),
+                id: this.props.navigation.state.params.detail.id.toString(),
                 message: "You set a reminder for this film: " + this.state.title, // (required)
                 date: this.state.date, // set Date TIme,
                 autoCancel: true,
-                
+
             });
         }
     }
     reloadData = () => {
-        queryAllFavorite().then(async(res) => {
-            let listFavourite = await res.map(item=>{
-              return {
-               id: item.id,
-               title: item.title,
-               vote_average: item.vote_average,
-               overview: item.overview,
-               release_date: item.release_date,
-               poster_path: item.poster_path,
-              }
-            }) 
+        queryAllFavorite().then(async (res) => {
+            let listFavourite = await res.map(item => {
+                return {
+                    id: item.id,
+                    title: item.title,
+                    vote_average: item.vote_average,
+                    overview: item.overview,
+                    release_date: item.release_date,
+                    poster_path: item.poster_path,
+                }
+            })
             //console.log(favoriteList)
             this.setState({ favoriteList: listFavourite });
             //console.log(this.state.favoriteList)
-            
+
         }).catch((error) => {
             this.setState({ favoriteList: [] })
         });
@@ -123,12 +123,10 @@ export default class MoviesDetail extends Component {
 
     _handleDatePicked = (date) => {
         var month = date.getMonth() + 1;
-        var bd = date.getDate() + "-" + month + "-" + date.getFullYear()+ "  "+date.getHours()+":"+date.getMinutes();
-        this.setState({ date: date})
-        
+        var bd = date.getDate() + "-" + month + "-" + date.getFullYear() + "  " + date.getHours() + ":" + date.getMinutes();
 
-        //console.log('A date has been picked: ', this.state.reminderTime);
-        this._hideDateTimePicker();
+
+        this.setState({ reminderTime: bd })
         let reminderList = {
             title: this.props.navigation.state.params.detail.title,
             id: this.props.navigation.state.params.detail.id,
@@ -137,16 +135,19 @@ export default class MoviesDetail extends Component {
             poster_path: this.props.navigation.state.params.detail.poster_path,
         }
         insertReminder(reminderList).then(
-            {
 
-            }
+            this.setState({ date: date })
+
         ).catch((error) => {
 
             alert('You added this film to Reminder. Please delete it before add again!')
         })
+        //console.log('A date has been picked: ', this.state.reminderTime);
+        this._hideDateTimePicker();
 
-        
-        this.setState({reminderTime:bd})
+
+
+
 
     };
 
@@ -154,7 +155,7 @@ export default class MoviesDetail extends Component {
     render() {
         const { params } = this.props.navigation.state;
 
-         
+
         var { height, width } = Dimensions.get('window');
         //this.loadItem(params.detail.id);
         //console.log(params.detail)
@@ -241,8 +242,6 @@ export default class MoviesDetail extends Component {
                             this._showDateTimePicker()
                         }
                         }
-
-
                     >
                         <Text style={{ color: 'white', padding: 5 }}>REMINDER</Text>
                     </TouchableOpacity>
