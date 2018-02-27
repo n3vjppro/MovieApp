@@ -4,7 +4,7 @@ import {
     Dimensions, TouchableOpacity, AsyncStorage
 } from 'react-native';
 import { deleteReminder, getReminderLimit } from '../database/allSchemas'
-
+import realm from '../database/allSchemas'
 export default class MoviesComponent extends Component {
     constructor(props) {
         super(props);
@@ -16,6 +16,10 @@ export default class MoviesComponent extends Component {
             birthDay: '',
             reminderList: []
         }
+        this.loadData();
+        realm.addListener('change', () => {
+            this.loadData();
+        })
     }
     getData = async () => {
         try {
@@ -35,16 +39,33 @@ export default class MoviesComponent extends Component {
             // Error retrieving data
         }
     }
+
+    loadData(){
+        getReminderLimit()
+        .then(res =>
+            res.map(movie => {
+                return {
+                    id: movie.id,
+                    title: movie.title,
+                    poster_path: movie.poster_path,
+                    release_date: movie.release_date,
+                    remindTime: movie.remindTime
+                }
+            })
+        )
+        .then((reminderList) => {
+            console.log("reminderList", reminderList)
+            this.setState({ reminderList: reminderList });
+            console.log(this.state.reminderList)
+        }).catch((error) => {
+            console.log('err')
+            this.setState({ reminderList: [] })
+        })
+    }
     componentDidMount() {
         this.getData();
         //console.log('nahn');
-        getReminderLimit().then((reminderList) => {
-                //console.log(reminderList)
-                this.setState({ reminderList: reminderList });
-                console.log(this.state.reminderList)
-            }).catch((error) => {
-                this.setState({ reminderList: [] })
-            })
+        
     }
     componentDidUpdate() {
         this.getData();
@@ -53,7 +74,8 @@ export default class MoviesComponent extends Component {
 
     render() {
         var { height, width } = Dimensions.get('window');
-        
+        let info = this.state.reminderList
+
         return (
             <View>
                 <View style={{
@@ -121,11 +143,16 @@ export default class MoviesComponent extends Component {
                 </TouchableOpacity>
                 <View style={{ margin: 10 }}>
                     <Text style={{ fontWeight: 'bold', fontSize: 17 }}>Reminder List:</Text>
-
-                    
-
-                    <Text style={{ backgroundColor: 'lightblue', marginTop: 3, padding: 5 }}>{this.state.reminderList.title}</Text>
-                    <Text style={{ backgroundColor: 'lightblue', marginTop: 3, padding: 5 }}>Annabelle</Text>
+                    {
+                        this.state.reminderList.length > 0 ?
+                            <Text style={{ backgroundColor: 'lightblue', marginTop: 3, padding: 5 }}>{info[0].title}</Text>
+                            : <View></View>
+                    }
+                    {
+                        this.state.reminderList.length >1 ?
+                            <Text style={{ backgroundColor: 'lightblue', marginTop: 3, padding: 5 }}>{info[1].title}</Text>
+                            : <View></View>
+                    }
 
                     <TouchableOpacity
                         onPress={() => this.props.navigation.navigate('Reminder')}
