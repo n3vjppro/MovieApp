@@ -59,6 +59,16 @@ export default class MoviesDetail extends Component {
             title: this.props.navigation.state.params.detail.title
         });
        // console.log(this.state.source)
+
+       fetch(api_get_cast + this.props.navigation.state.params.detail.id + "/credits?api_key=0267c13d8c7d1dcddb40001ba6372235")
+       .then((response) => response.json())
+       .then((responseJson) => {
+           this.setState({ listCasts: responseJson.cast })
+           //console.log(this.state.listCasts)
+       })
+       .catch((error) => {
+           console.log(error);
+       });
     };
     componentWillUnmount() {
         AppState.addEventListener('change', this.handleAppStateChange)
@@ -71,7 +81,7 @@ export default class MoviesDetail extends Component {
                 message: "You set a reminder for this film: " + this.state.title, // (required)
                 date: this.state.date, // set Date TIme,
                 autoCancel: true,
-                repeatType: 'day',
+                
             });
         }
     }
@@ -115,6 +125,10 @@ export default class MoviesDetail extends Component {
         var month = date.getMonth() + 1;
         var bd = date.getDate() + "-" + month + "-" + date.getFullYear()+ "  "+date.getHours()+":"+date.getMinutes();
         this.setState({ date: date})
+        
+
+        //console.log('A date has been picked: ', this.state.reminderTime);
+        this._hideDateTimePicker();
         let reminderList = {
             title: this.props.navigation.state.params.detail.title,
             id: this.props.navigation.state.params.detail.id,
@@ -134,24 +148,13 @@ export default class MoviesDetail extends Component {
         
         this.setState({reminderTime:bd})
 
-
-        //console.log('A date has been picked: ', this.state.reminderTime);
-        this._hideDateTimePicker();
     };
 
 
     render() {
         const { params } = this.props.navigation.state;
 
-        fetch(api_get_cast + params.detail.id + "/credits?api_key=0267c13d8c7d1dcddb40001ba6372235")
-            .then((response) => response.json())
-            .then((responseJson) => {
-                this.setState({ listCasts: responseJson.cast })
-                //console.log(this.state.listCasts)
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+         
         var { height, width } = Dimensions.get('window');
         //this.loadItem(params.detail.id);
         //console.log(params.detail)
@@ -236,9 +239,6 @@ export default class MoviesDetail extends Component {
                         style={{ backgroundColor: '#208fff', justifyContent: 'center', borderRadius: 5, margin: 10 }}
                         onPress={() => {
                             this._showDateTimePicker()
-
-                           
-
                         }
                         }
 

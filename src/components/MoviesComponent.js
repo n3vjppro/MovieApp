@@ -54,8 +54,9 @@ export class MoviesComponent extends Component {
         );
         let headerTitle = (
             <TouchableOpacity
+                style={{alignItems:'center', justifyContent:'center'}}
                 onPress={() => navigation.state.params.handleModal()}
-            ><Text >Movies</Text></TouchableOpacity>);
+            ><Text style={{ fontWeight: 'bold', fontSize: 17 }} >Movies</Text></TouchableOpacity>);
         return { tabBarIcon, headerRight, headerTitle }
 
         //let tabBarLabel = 'Movies';
@@ -103,21 +104,21 @@ export class MoviesComponent extends Component {
     }
 
     loadData = () => {
-        queryAllFavorite().then(async(res) => {
-            let listFavourite = await res.map(item=>{
-              return {
-               id: item.id,
-               title: item.title,
-               vote_average: item.vote_average,
-               overview: item.overview,
-               release_date: item.release_date,
-               poster_path: item.poster_path,
-              }
-            }) 
+        queryAllFavorite().then(async (res) => {
+            let listFavourite = await res.map(item => {
+                return {
+                    id: item.id,
+                    title: item.title,
+                    vote_average: item.vote_average,
+                    overview: item.overview,
+                    release_date: item.release_date,
+                    poster_path: item.poster_path,
+                }
+            })
             // console.log(favoriteList)
             this.setState({ favoriteList: listFavourite });
             //console.log(this.state.favoriteList)
-            
+
         }).catch((error) => {
             this.setState({ favoriteList: [] })
         });
@@ -248,7 +249,7 @@ export class FlatListItem extends Component {
         this.state = {
 
             source: '',
-            love:false,
+            love: false,
         }
         this.loadData();
         realm.addListener('change', () => {
@@ -259,7 +260,7 @@ export class FlatListItem extends Component {
     loadData = () => {
         queryItemFavorite(this.props.item.id).then(
             obj => {
-                obj != null ? this.setState({ source: '../icons/heart.png', love:true }) : this.setState({ source: '../icons/heart-outline.png',love:false })
+                obj != null ? this.setState({ source: '../icons/heart.png', love: true }) : this.setState({ source: '../icons/heart-outline.png', love: false })
                 //console.log(this.state.source)
             }
         ).catch((error) =>
@@ -270,7 +271,7 @@ export class FlatListItem extends Component {
 
         queryItemFavorite(this.props.item.id).then(
             obj => {
-                obj != null ? this.setState({ source: '../icons/heart.png', love:true }) : this.setState({ source: '../icons/heart-outline.png',love:false })
+                obj != null ? this.setState({ source: '../icons/heart.png', love: true }) : this.setState({ source: '../icons/heart-outline.png', love: false })
                 //console.log(this.state.source)
             }
         ).catch((error) =>
@@ -295,7 +296,7 @@ export class FlatListItem extends Component {
                     <TouchableOpacity
                         onPress={
                             () =>
-                                this.props.navigation.navigate('DetailMovie', { detail: this.props.item, source:this.state.source })
+                                this.props.navigation.navigate('DetailMovie', { detail: this.props.item, source: this.state.source })
 
                         }
 

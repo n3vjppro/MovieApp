@@ -35,8 +35,13 @@ let tabNavigatorConfigs = {
     swipeEnabled: true,
     tabBarOptions: {
         showIcon: true,
+        labelStyle: {
+			fontSize: 10,
+			
+		},
         style: {
-            padding: -10
+            padding: -10,
+            backgroundColor:'white',
         },
         //showLabel: false,
         activeTintColor: 'black',
