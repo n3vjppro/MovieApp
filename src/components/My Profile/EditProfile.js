@@ -91,7 +91,7 @@ export default class EditProfile extends React.Component {
     }
     getData = async () => {
         try {
-            console.log('value');
+            ///console.log('value');
             const value = await AsyncStorage.getItem('userInfo');
             if (value !== null) {
                 // console.log(JSON.parse(value));

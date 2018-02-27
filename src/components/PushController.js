@@ -5,7 +5,7 @@ export default class PushController extends Component {
     componentDidMount() {
         PushNotification.configure({
             onNotification: function (notification) {
-                console.log('NOTIFICATION:', notification);
+                //console.log('NOTIFICATION:', notification);
             }
         });
     }

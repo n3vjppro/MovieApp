@@ -80,11 +80,11 @@ export class MoviesComponent extends Component {
                 .then((responseJson) => {
                     this.setState({ moviesList: [...this.state.moviesList, ...responseJson.results] })
                     this.setState({ refreshData: false })
-                    console.log(this.state)
+                    //console.log(this.state)
                 })
                 .catch((error) => {
                     this.setState({ refreshData: false })
-                    console.log(error);
+                    //console.log(error);
                 })
         }, 1500);
     }
@@ -116,12 +116,12 @@ export class MoviesComponent extends Component {
             }) 
             // console.log(favoriteList)
             this.setState({ favoriteList: listFavourite });
-            console.log(this.state.favoriteList)
+            //console.log(this.state.favoriteList)
             
         }).catch((error) => {
             this.setState({ favoriteList: [] })
         });
-        console.log('loadData', this.state.favoriteList)
+        //console.log('loadData', this.state.favoriteList)
     }
 
     updateFavoriteList = (item) => {
@@ -260,7 +260,7 @@ export class FlatListItem extends Component {
         queryItemFavorite(this.props.item.id).then(
             obj => {
                 obj != null ? this.setState({ source: '../icons/heart.png', love:true }) : this.setState({ source: '../icons/heart-outline.png',love:false })
-                console.log(this.state.source)
+                //console.log(this.state.source)
             }
         ).catch((error) =>
             alert(error)
@@ -271,7 +271,7 @@ export class FlatListItem extends Component {
         queryItemFavorite(this.props.item.id).then(
             obj => {
                 obj != null ? this.setState({ source: '../icons/heart.png', love:true }) : this.setState({ source: '../icons/heart-outline.png',love:false })
-                console.log(this.state.source)
+                //console.log(this.state.source)
             }
         ).catch((error) =>
             alert(error)

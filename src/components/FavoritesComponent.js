@@ -172,12 +172,12 @@ export class FavoritesComponent extends Component {
             }) 
             
             this.setState({ favoriteList: listFavourite });
-            console.log(this.state.favoriteList)
+            //console.log(this.state.favoriteList)
             
         }).catch((error) => {
             this.setState({ favoriteList: [] })
         });
-        console.log('reload')
+        //console.log('reload')
     }
     render() {
         return (

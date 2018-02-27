@@ -54,11 +54,11 @@ export default class MoviesComponent extends Component {
             })
         )
         .then((reminderList) => {
-            console.log("reminderList", reminderList)
+            //console.log("reminderList", reminderList)
             this.setState({ reminderList: reminderList });
-            console.log(this.state.reminderList)
+            //console.log(this.state.reminderList)
         }).catch((error) => {
-            console.log('err')
+           // console.log('err')
             this.setState({ reminderList: [] })
         })
     }
@@ -145,12 +145,12 @@ export default class MoviesComponent extends Component {
                     <Text style={{ fontWeight: 'bold', fontSize: 17 }}>Reminder List:</Text>
                     {
                         this.state.reminderList.length > 0 ?
-                            <Text style={{ backgroundColor: 'lightblue', marginTop: 3, padding: 5 }}>{info[0].title}</Text>
+                            <Text style={{ backgroundColor: 'lightblue', marginTop: 3, padding: 5 }}>{info[0].title} -- {info[0].remindTime}</Text>
                             : <View></View>
                     }
                     {
                         this.state.reminderList.length >1 ?
-                            <Text style={{ backgroundColor: 'lightblue', marginTop: 3, padding: 5 }}>{info[1].title}</Text>
+                            <Text style={{ backgroundColor: 'lightblue', marginTop: 3, padding: 5 }}>{info[1].title} -- {info[1].remindTime}</Text>
                             : <View></View>
                     }
 

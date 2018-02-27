@@ -58,7 +58,7 @@ export default class MoviesDetail extends Component {
             source: this.props.navigation.state.params.source,
             title: this.props.navigation.state.params.detail.title
         });
-        console.log(this.state.source)
+       // console.log(this.state.source)
     };
     componentWillUnmount() {
         AppState.addEventListener('change', this.handleAppStateChange)
@@ -67,8 +67,11 @@ export default class MoviesDetail extends Component {
         if (appState === 'background') {
             console.log('app background', this.state.date)
             PushNotification.localNotificationSchedule({
+                id:this.props.navigation.state.params.detail.id.toString(),
                 message: "You set a reminder for this film: " + this.state.title, // (required)
-                date: this.state.date // set Date TIme
+                date: this.state.date, // set Date TIme,
+                autoCancel: true,
+                repeatType: 'day',
             });
         }
     }
@@ -86,17 +89,17 @@ export default class MoviesDetail extends Component {
             }) 
             //console.log(favoriteList)
             this.setState({ favoriteList: listFavourite });
-            console.log(this.state.favoriteList)
+            //console.log(this.state.favoriteList)
             
         }).catch((error) => {
             this.setState({ favoriteList: [] })
         });
-        console.log('reload')
+        //console.log('reload')
 
         queryItemFavorite(this.props.navigation.state.params.detail.id).then(
             obj => {
                 obj != null ? this.setState({ source: '../icons/heart.png' }) : this.setState({ source: '../icons/heart-outline.png' })
-                console.log(this.state.source)
+                //console.log(this.state.source)
             }
         ).catch((error) =>
             alert(error)
@@ -110,12 +113,29 @@ export default class MoviesDetail extends Component {
 
     _handleDatePicked = (date) => {
         var month = date.getMonth() + 1;
-        var bd = date.getDate() + "-" + date.getHours() + "-" + date.getMinutes();
+        var bd = date.getDate() + "-" + month + "-" + date.getFullYear()+ "  "+date.getHours()+":"+date.getMinutes();
+        this.setState({ date: date})
+        let reminderList = {
+            title: this.props.navigation.state.params.detail.title,
+            id: this.props.navigation.state.params.detail.id,
+            release_date: this.props.navigation.state.params.detail.release_date,
+            remindTime: bd,
+            poster_path: this.props.navigation.state.params.detail.poster_path,
+        }
+        insertReminder(reminderList).then(
+            {
 
-        this.setState({ date: date })
+            }
+        ).catch((error) => {
+
+            alert('You added this film to Reminder. Please delete it before add again!')
+        })
+
+        
+        this.setState({reminderTime:bd})
 
 
-        //console.log('A date has been picked: ', this.state.textBirthDay);
+        //console.log('A date has been picked: ', this.state.reminderTime);
         this._hideDateTimePicker();
     };
 
@@ -217,21 +237,7 @@ export default class MoviesDetail extends Component {
                         onPress={() => {
                             this._showDateTimePicker()
 
-                            let reminderList = {
-                                title: params.detail.title,
-                                id: params.detail.id,
-                                release_date: params.detail.release_date,
-                                remindTime: JSON.stringify(this.state.date),
-                                poster_path: params.detail.poster_path,
-                            }
-                            insertReminder(reminderList).then(
-                                {
-
-                                }
-                            ).catch((error) => {
-
-                                alert('You added this film to Reminder. Please delete it before add again!')
-                            })
+                           
 
                         }
                         }

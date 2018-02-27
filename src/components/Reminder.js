@@ -5,7 +5,9 @@ import {StackNavigator} from 'react-navigation'
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import { deleteReminder, queryAllReminder } from './database/allSchemas'
 import realm from './database/allSchemas';
-import Swipeout from 'react-native-swipeout'
+import Swipeout from 'react-native-swipeout';
+import PushController from './PushController'
+import PushNotification from 'react-native-push-notification';
 
 let FlatListItem = props => {
     const { index, item } = props;
@@ -53,7 +55,9 @@ let FlatListItem = props => {
                         {
                             text: 'OK',
                             onPress: () => {
-                                deleteReminder(item.id)
+                                deleteReminder(item.id).then(
+                                    PushNotification.cancelLocalNotifications({id: item.id.toString()})
+                                )
                             }
                         }]
                     )
@@ -109,7 +113,7 @@ let FlatListItem = props => {
                        
 
                         <Text style={styles.flatListItemSub}>Reminder:</Text>
-                        <Text numberOfLines={3} style={styles.flatListItemDetail}>{JSON.parse(item.remindTime)}</Text>
+                        <Text numberOfLines={3} style={styles.flatListItemDetail}>{(item.remindTime)}</Text>
                     </View>
                 </View>
                 <View style={{
@@ -178,13 +182,13 @@ export  class Reminder extends Component {
 
     reloadData = () => {
         queryAllReminder().then((reminderList) => {
-            console.log(reminderList)
+            //console.log(reminderList)
             this.setState({ reminderList: reminderList });
             //console.log(this.state.favoriteList)
         }).catch((error) => {
             this.setState({ reminderList: [] })
         });
-        console.log('reload')
+        //console.log('reload')
     };
     
     render() {
